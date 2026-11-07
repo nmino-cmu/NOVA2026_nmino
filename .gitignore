@@ -1,0 +1,22 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+.npm/
+.next/
+dist/
+build/
+
+# IDE / tooling
+.idea/
+.vscode/
+*.swp
