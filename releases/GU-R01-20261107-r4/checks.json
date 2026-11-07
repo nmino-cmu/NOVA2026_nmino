@@ -1,0 +1,42 @@
+[
+  {
+    "name": "pytest-r01",
+    "command": "uv run pytest -q tests",
+    "result": "passed",
+    "at": "2026-11-07T13:18:00-05:00",
+    "detail": "11 tests: units, Orbit routes, ordinary/shortcut/express replay, supplied milestone."
+  },
+  {
+    "name": "openrouter-structured-completion",
+    "result": "passed",
+    "at": "2026-11-07T13:20:00-05:00",
+    "detail": "anthropic/claude-sonnet-4.6 returned word=ok. Cost reported. Key not printed."
+  },
+  {
+    "name": "live-model-investigation",
+    "result": "passed",
+    "at": "2026-11-07T13:22:00-05:00",
+    "run_id": "run_c6252c9a4a6e4ba2",
+    "detail": "Verified 6 interactions. Replay passed. Express was the first click and did not by itself satisfy the cart check."
+  },
+  {
+    "name": "express-regression",
+    "result": "passed",
+    "at": "2026-11-07T13:21:00-05:00",
+    "run_id": "run_f14d218e9d8c4dff",
+    "detail": "Expected failure. Authoritative cart was not one Nova Mug."
+  },
+  {
+    "name": "stop",
+    "result": "passed",
+    "at": "2026-11-07T13:26:00-05:00",
+    "run_id": "run_38c72d89d7c34524",
+    "detail": "stopped_by_user before a model request."
+  },
+  {
+    "name": "clean-start",
+    "result": "passed",
+    "at": "2026-11-07T13:32:20.203719-05:00",
+    "detail": "Relocated copy at /tmp/Ghost Users validate/GU-R01-20261107-r4 started, served health, and played run_c6252c9a4a6e4ba2 without a key."
+  }
+]

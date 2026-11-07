@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-11-07T13:28:00-05:00",
+  "recordedAtUtc": "2026-11-07T18:28:00+00:00",
+  "deadline": "2026-11-07T17:00:00-05:00",
+  "minutesRemainingAtRecord": 212,
+  "activeStage": "R01",
+  "contract": "v1",
+  "integratedRevision": null,
+  "selectedRelease": null,
+  "optionalStageCutoff": "2026-11-07T15:00:00-05:00",
+  "sourceFreezeCutoff": "2026-11-07T15:25:00-05:00",
+  "packageCutoff": "2026-11-07T15:45:00-05:00",
+  "owners": {
+    "coordinator": "lead",
+    "engine": "lead",
+    "fixture": "lead",
+    "ui": "composer-2.5",
+    "verifier": "lead"
+  },
+  "ports": {"ghost": 8787, "orbit": 8788, "vite": 5173},
+  "leases": {"browser": "ghost-users", "sqlite": "ghost-users"},
+  "nextDependency": "portable R01 package",
+  "failingChecks": [],
+  "latestOutcome": "R01 slice passed: ordinary regression 5 interactions, Express regression failed on empty cart, supplied milestone passed, live model run verified at 6 interactions, stop ended with stopped_by_user.",
+  "evidenceRuns": {
+    "ordinaryRegression": "run_b1a8b04516204ce7",
+    "expressRegression": "run_f14d218e9d8c4dff",
+    "liveModel": "run_c6252c9a4a6e4ba2",
+    "stopped": "run_38c72d89d7c34524"
+  },
+  "qwen": "not_listening_on_18092_not_started",
+  "figma": "unverified_local_sheet"
+}

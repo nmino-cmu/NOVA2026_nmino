@@ -1,0 +1,5 @@
+run_id,role,status,stop_reason,interactions,model_requests,total_tokens,spend_usd,browser_actions,resets,elapsed_ms,build
+run_c6252c9a4a6e4ba2,live_model,passed,completed_target,6,6,4303,0.017589,14,2,18334,orbit-buggy-v1
+run_b1a8b04516204ce7,fixture_ordinary,passed,completed_target,5,0,,unknown,12,2,3189,orbit-buggy-v1
+run_f14d218e9d8c4dff,fixture_express,failed,search_envelope_exhausted,1,0,,unknown,4,2,3186,orbit-buggy-v1
+run_38c72d89d7c34524,stop,stopped,stopped_by_user,,0,,unknown,,,,
