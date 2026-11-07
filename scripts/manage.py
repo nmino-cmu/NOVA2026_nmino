@@ -154,6 +154,9 @@ def stop() -> int:
         deadline = time.time() + 5
         while time.time() < deadline and _command(pid):
             time.sleep(0.1)
+        if _command(pid) and marker in _command(pid):
+            os.kill(pid, 9)
+            time.sleep(0.2)
         if _command(pid):
             print(f"{name} pid {pid} did not exit")
             return 1
