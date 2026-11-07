@@ -151,11 +151,23 @@ def snapshot(store: Store, run_id: str) -> dict:
                 "status": verifications[-1]["status"],
                 "interactions": verifications[-1].get("interactions"),
                 "detail": verifications[-1].get("detail"),
+                "stale": bool(verifications[-1].get("stale")),
             },
             "nodes": nodes,
             "edges": edges,
             "witness": witness,
             "checks": run.get("checks") or [],
+            "decisions": [
+                {
+                    "id": item.get("id"),
+                    "kind": item.get("kind") or "heuristic",
+                    "reason": item.get("reason") or "",
+                    "g": item.get("g"),
+                    "h": item.get("h"),
+                    "U": item.get("U"),
+                }
+                for item in store.records(run_id, "decision")
+            ][-8:],
             "activity": [
                 {"seq": event["seq"], "type": event["type"], "summary": event["payload"].get("summary") or event["type"]}
                 for event in events

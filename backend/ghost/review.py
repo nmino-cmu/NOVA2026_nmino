@@ -8,6 +8,20 @@ import json
 from ghost.ids import new_id
 
 
+def comparability(before_build: str, after_build: str, before_fingerprint: str, after_fingerprint: str) -> str:
+    if before_fingerprint != after_fingerprint:
+        return "not_comparable"
+    if before_build == after_build:
+        return "same_build"
+    return "comparable_build_change"
+
+
+def freshness(recorded_build: str | None, current_build: str | None) -> str:
+    if not recorded_build or not current_build or recorded_build == current_build:
+        return "current"
+    return "stale"
+
+
 def fingerprint(task: dict, action_hash: str) -> str:
     payload = {
         "goal": task.get("goal"),

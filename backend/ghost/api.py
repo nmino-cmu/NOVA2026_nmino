@@ -16,9 +16,9 @@ from playwright.async_api import async_playwright
 from ghost.accounting.ledger import Ledger
 from ghost.config import Settings
 from ghost.engine.adaptive import run_adaptive
-from ghost.engine.compare import harbor_checkout
+from ghost.engine.compare import harbor_checkout, orbit_shortcut
 from ghost.engine.keyboard import run_keyboard
-from ghost.engine.policies import ModelChooser
+from ghost.engine.policies import CompatibleChooser, ModelChooser
 from ghost.engine.restore import orbit_set_build
 from ghost.engine.runner import execute_run
 from ghost.engine.verifier import verify_route
@@ -27,7 +27,7 @@ from ghost.providers import openrouter as provider
 from ghost.providers.compatible import complete as compatible_complete
 from ghost.registry import EVALUATORS, build_task
 from ghost.regressions import POLICIES, Scripted, scripted_for
-from ghost.review import brief_markdown, fingerprint, recommendation_for
+from ghost.review import brief_markdown, comparability, fingerprint, freshness, recommendation_for
 from ghost.store.projections import playback, snapshot
 from ghost.store.sqlite import Store
 
@@ -80,6 +80,9 @@ async def _job(app: FastAPI, run_id: str) -> None:
         def factory(ledger: Ledger):
             if run["policyId"] == "ordinary-model-v1":
                 return ModelChooser(settings, store, ledger, run_id, task)
+            if run["policyId"] == "compatible-v1":
+                base = os.environ.get("GHOST_COMPATIBLE_BASE", "http://127.0.0.1:8791/v1")
+                return CompatibleChooser(base, store, ledger, run_id, task)
             return scripted_for(run["policyId"])
 
         await execute_run(settings, store, app.state.browser, run_id, factory)
@@ -125,6 +128,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "provider": True,
                 "keyboard": True,
                 "workers": 2,
+                "invalidation": True,
             },
             "provider": {"configured": _configured(), "model": settings.model, "verified": False},
             "fixture": {
@@ -284,6 +288,29 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except KeyError:
             raise HTTPException(404, "Verification not found.") from None
 
+    @app.post("/api/runs/{run_id}/invalidation")
+    def invalidate(run_id: str, body: dict):
+        build = str(body.get("build") or "")
+        if not build:
+            raise HTTPException(400, "Name the build that should be current.")
+        try:
+            app.state.store.get_run(run_id)
+        except KeyError:
+            raise HTTPException(404, "Run not found.") from None
+        marked = []
+        for row in app.state.store.records(run_id, "verification"):
+            state = freshness(row.get("buildId"), build)
+            row["stale"] = state == "stale"
+            app.state.store.replace_record("verification", row["id"], row)
+            marked.append({"id": row["id"], "freshness": state})
+        app.state.store.add_event(
+            run_id,
+            "finding_recorded",
+            run_id,
+            {"summary": f"Checked {len(marked)} verification(s) against {build}"},
+        )
+        return {"build": build, "verifications": marked}
+
     @app.post("/api/routes/{route_id}/verify")
     async def rerun(request: Request, route_id: str):
         try:
@@ -359,12 +386,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post("/api/comparisons")
     async def compare():
         harbor = os.environ.get("HARBOR_ORIGIN", "http://127.0.0.1:8789")
-        result = await harbor_checkout(app.state.browser, harbor)
+        harbor_result, orbit_result = await asyncio.gather(
+            harbor_checkout(app.state.browser, harbor),
+            orbit_shortcut(app.state.browser, settings.orbit_origin),
+        )
+        both = harbor_result.get("status") == "passed" and orbit_result.get("status") == "passed"
         return {
-            "harbor": result,
-            "orbitShortcutInteractions": 3,
-            "comparable": result.get("status") == "passed",
-            "reason": "Both tasks start logged out and ask for checkout with one Nova Mug. The routes are measured separately." if result.get("status") == "passed" else result.get("detail"),
+            "harbor": harbor_result,
+            "orbit": orbit_result,
+            "comparable": both,
+            "reason": "Both start logged out and ask for checkout with one Nova Mug. Each route was run in this comparison." if both else "One of the two routes did not finish.",
         }
 
     @app.post("/api/provider/test")
@@ -446,7 +477,7 @@ async def _rerun(app: FastAPI, route: dict) -> None:
         )
         store.apply(
             run["id"],
-            records=[("verification", result["id"], result)],
+            records=[("verification", result["id"], {**result, "buildId": run.get("buildId")})],
             event_type="route_verified",
             entity_id=result["id"],
             summary=f"Replay {result['status']}",
@@ -468,16 +499,39 @@ async def _retest(app: FastAPI, run_id: str, before_run_id: str | None) -> None:
             best = current["projection"]["bestVerified"]
             task = store.get_task(store.get_run(run_id)["taskId"])
             action_hash = "" if not best else best["actionSequenceHash"]
+            before_build = "orbit-buggy-v1"
+            before_hash = action_hash
+            before_rows = []
+            if before_run_id:
+                try:
+                    before_rows = store.records(before_run_id, "verification")
+                    before_snap = snapshot(store, before_run_id)
+                    before_build = before_snap.get("buildId") or before_build
+                    if before_rows and before_rows[-1].get("actionSequenceHash"):
+                        before_hash = before_rows[-1]["actionSequenceHash"]
+                except KeyError:
+                    before_rows = []
+            relation = comparability(
+                before_build,
+                current.get("buildId") or "",
+                fingerprint(task, before_hash),
+                fingerprint(task, action_hash),
+            )
+            if relation == "comparable_build_change":
+                for row in before_rows:
+                    row["stale"] = True
+                    store.replace_record("verification", row["id"], row)
             record = {
                 "id": run_id,
                 "beforeRunId": before_run_id,
                 "afterRunId": run_id,
-                "beforeBuild": "orbit-buggy-v1",
+                "beforeBuild": before_build,
                 "afterBuild": current.get("buildId"),
                 "fingerprint": fingerprint(task, action_hash),
                 "status": current["status"],
                 "interactions": None if not best else best["interactions"],
-                "comparable": True,
+                "comparable": relation == "comparable_build_change",
+                "relation": relation,
             }
             store.apply(run_id, records=[("retest", run_id, record)], event_type="finding_recorded", entity_id=run_id, summary="Recorded the Express retest")
         finally:

@@ -44,6 +44,7 @@ async def run_keyboard(settings, store, browser, run_id: str) -> None:
             "actions": [action],
             "prefixIds": [],
             "actionSequenceHash": "keyboard-enter-confirm-desk",
+            "buildId": "keyboard-local",
         }
         store.apply(
             run_id,

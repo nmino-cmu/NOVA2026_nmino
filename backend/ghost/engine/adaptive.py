@@ -8,7 +8,7 @@ from ghost.engine.browser import TargetError, activate, capture, open_context
 from ghost.engine.candidates import build
 from ghost.engine.observer import observe, page_key
 from ghost.engine.restore import orbit_health, orbit_reset, orbit_state
-from ghost.engine.schedule import choose, partition, relevance
+from ghost.engine.schedule import choose, claim_exact, partition, relevance
 from ghost.engine.verifier import verify_route
 from ghost.hashing import action_sequence_hash
 from ghost.ids import new_id
@@ -143,7 +143,7 @@ async def _run(settings, store, browser, run_id: str) -> None:
                         store.apply(run_id, records=[("route", route_id, {"id": route_id, "actions": live, "actionSequenceHash": sequence, "interactions": len(live), "prefixIds": chain, "status": "candidate"})], event_type="state_discovered", entity_id=route_id, summary="Froze a witnessed route")
                         store.update_run(run_id, phase="verify")
                         verification = await verify_route(settings=settings, store=store, browser=browser, run_id=run_id, task=task, actions=live, ledger=ledger, baseline_orders=baseline, expected_build=build_id, prefix_ids=chain, route_id=route_id)
-                        store.apply(run_id, records=[("verification", verification["id"], verification)], event_type="route_verified", entity_id=verification["id"], summary=f"Replay {verification['status']}", extra={"status": verification["status"]})
+                        store.apply(run_id, records=[("verification", verification["id"], {**verification, "buildId": build_id})], event_type="route_verified", entity_id=verification["id"], summary=f"Replay {verification['status']}", extra={"status": verification["status"]})
                         if verification["status"] == "passed" and (incumbent is None or verification["interactions"] < incumbent["interactions"]):
                             incumbent = verification
                             checks = _set(checks, "goal", "passed", verification["detail"])
@@ -153,7 +153,7 @@ async def _run(settings, store, browser, run_id: str) -> None:
                     for candidate in build(facts.get("controls") or [], set(), task.get("forbiddenNames") or [], page_key(facts["url"])):
                         name = candidate["target"]["name"]
                         key = _exact(live, name)
-                        if key in seen_exact or len(live) + 1 > task["limits"]["routeActions"]:
+                        if len(live) + 1 > task["limits"]["routeActions"] or not claim_exact(seen_exact, key):
                             continue
                         if any(step["target"]["name"] == name for step in live):
                             continue

@@ -4,6 +4,7 @@ from ghost.engine.browser import context_headers
 from ghost.hashing import action_sequence_hash
 from ghost.providers.guard import find_violation
 from ghost.registry import Ctx, _self_check, build_task, evaluate
+from ghost.review import brief_markdown, comparability, freshness, recommendation_for
 from ghost.store.sqlite import Store
 
 
@@ -65,3 +66,32 @@ def test_orbit_task_does_not_hardcode_the_build_in_goal_args():
     task = build_task({"mode": "orbit"}, orbit_origin="http://127.0.0.1:8788", model="m")
     assert task["goal"][0]["args"] == {}
     assert "buggy" not in str(task["goal"])
+
+
+def test_a_build_change_is_comparable_and_stale(tmp_path):
+    task = build_task({"mode": "orbit"}, orbit_origin="http://127.0.0.1:8788", model="m")
+    from ghost.review import fingerprint
+
+    digest = fingerprint(task, "same-route")
+    assert comparability("orbit-buggy-v1", "orbit-fixed-v1", digest, digest) == "comparable_build_change"
+    assert comparability("orbit-buggy-v1", "orbit-fixed-v1", digest, "other") == "not_comparable"
+    assert freshness("orbit-buggy-v1", "orbit-fixed-v1") == "stale"
+    assert freshness("orbit-fixed-v1", "orbit-fixed-v1") == "current"
+    recommendation = recommendation_for({"id": "ver_failed"}, ["ev_1"])
+    brief = brief_markdown(recommendation, "orbit-buggy-v1")
+    assert "not permission to edit" in brief
+    assert recommendation["source"] == "witnessed-failure"
+    store = Store(tmp_path)
+    created = store.create_task(task)
+    run = store.create_run(task_id=created["id"], policy_id="regression.express.v1", idempotency_key="idem-stale-1", discovery=False, label="Fixture regression check")
+    store.apply(
+        run["id"],
+        records=[("verification", "ver_stale", {"id": "ver_stale", "status": "failed", "buildId": "orbit-buggy-v1", "stale": False})],
+        event_type="route_verified",
+        entity_id="ver_stale",
+        summary="Recorded a failed Express check",
+    )
+    row = store.records(run["id"], "verification")[0]
+    row["stale"] = freshness(row["buildId"], "orbit-fixed-v1") == "stale"
+    store.replace_record("verification", row["id"], row)
+    assert store.find("verification", "ver_stale")["stale"] is True

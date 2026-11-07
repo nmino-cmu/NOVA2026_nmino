@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 from ghost.ids import new_id
+from ghost.providers.compatible import choose as compatible_choose
 from ghost.providers.openrouter import complete_json
 
 
@@ -80,3 +81,45 @@ class ModelChooser:
         self.last_ok = True
         self.reason = str(completion.data["rationale"])[:500]
         return str(completion.data["candidate_id"])
+
+
+class CompatibleChooser:
+    """Choices come from a loopback OpenAI-compatible endpoint, not from a hidden route."""
+
+    needs_model = True
+    force_verify = False
+
+    def __init__(self, base_url: str, store, ledger, run_id: str, task: dict):
+        self.base_url = base_url
+        self.store = store
+        self.ledger = ledger
+        self.run_id = run_id
+        self.task = task
+        self.reason = ""
+        self.missing = None
+        self.last_ok = True
+
+    async def choose(self, observation: dict, candidates: list[dict], history: list[dict]) -> str | None:
+        self.last_ok = False
+        result = await compatible_choose(self.base_url, json.dumps(prompt_payload(self.task, observation, candidates, history)))
+        self.ledger.used_requests += 1
+        total = (result.get("usage") or {}).get("total_tokens")
+        if total is None:
+            self.ledger.unknown_tokens = True
+        elif not self.ledger.unknown_tokens:
+            self.ledger.used_tokens += int(total)
+        usage_id = new_id("use")
+        self.store.apply(
+            self.run_id,
+            records=[("usage", usage_id, {"channel": "model", "purpose": "browser_plan", "totalTokens": total, "spendingUSD": None})],
+            event_type="usage_updated",
+            entity_id=usage_id,
+            summary="Compatible endpoint request settled" if result.get("ok") else "Compatible endpoint request failed",
+        )
+        data = result.get("data") or {}
+        if not result.get("ok") or "candidate_id" not in data:
+            self.reason = result.get("detail") or "The endpoint did not name a candidate."
+            return None
+        self.last_ok = True
+        self.reason = str(data.get("rationale") or "Chosen by the configured endpoint.")[:500]
+        return str(data["candidate_id"])

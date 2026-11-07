@@ -109,3 +109,27 @@ def test_ordinary_shortcut_and_express(orbit_server):
     finally:
         browser.close()
         playwright.stop()
+
+
+def test_two_namespaces_keep_separate_carts(orbit_server):
+    from concurrent.futures import ThreadPoolExecutor
+
+    left = "ns" + uuid.uuid4().hex[:8]
+    right = "ns" + uuid.uuid4().hex[:8]
+    _reset(orbit_server, left)
+    _reset(orbit_server, right)
+
+    def add(namespace: str):
+        return httpx.post(
+            orbit_server["url"] + "/api/cart/items",
+            headers={"X-Orbit-Namespace": namespace, "Content-Type": "application/json"},
+            json={"sku": "nova-mug", "qty": 1},
+            timeout=5,
+        )
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(add, [left, right]))
+    assert [item.status_code for item in results] == [200, 200]
+    add(left)
+    assert _state(orbit_server, left)["cart"] == [{"sku": "nova-mug", "qty": 2}]
+    assert _state(orbit_server, right)["cart"] == [{"sku": "nova-mug", "qty": 1}]

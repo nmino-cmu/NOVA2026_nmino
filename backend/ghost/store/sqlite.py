@@ -293,6 +293,14 @@ class Store:
         payload["runId"] = row["run_id"]
         return payload
 
+    def replace_record(self, kind: str, record_id: str, payload: dict) -> None:
+        body = {key: value for key, value in payload.items() if key != "runId"}
+        with self._lock:
+            self._conn.execute(
+                "UPDATE records SET payload=? WHERE kind=? AND id=?",
+                (json.dumps(body), kind, record_id),
+            )
+
     def records(self, run_id: str, kind: str) -> list[dict]:
         with self._lock:
             rows = self._conn.execute(

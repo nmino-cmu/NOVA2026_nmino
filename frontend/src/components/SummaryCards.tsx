@@ -43,6 +43,9 @@ export function SummaryCards({ snapshot }: Props) {
         ) : (
           <p className="summary-empty">Pending</p>
         )}
+        {latest?.stale ? (
+          <div style={{ color: "var(--deferred)", fontSize: "0.875rem" }}>Stale after a build change. Replay before trusting it.</div>
+        ) : null}
       </div>
       <div className="card">
         <h3>Usage</h3>

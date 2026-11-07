@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import asyncio
+import os
+import socket
+import subprocess
+import sys
+import time
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -8,7 +15,9 @@ from playwright.async_api import async_playwright
 from fixtures.orbit.checks import EXPRESS, ORDINARY, SHORTCUT
 from ghost.config import Settings
 from ghost.engine.adaptive import run_adaptive
+from ghost.engine.compare import harbor_checkout, orbit_shortcut
 from ghost.engine.keyboard import run_keyboard
+from ghost.engine.policies import CompatibleChooser
 from ghost.engine.runner import execute_run
 from ghost.registry import build_task
 from ghost.regressions import Scripted
@@ -133,6 +142,8 @@ async def test_adaptive_verifies_a_real_route(orbit_server, tmp_path):
     assert body["projection"]["bestVerified"]["interactions"] <= 6
     decisions = store.records(run["id"], "decision")
     assert decisions
+    assert body["projection"]["decisions"]
+    assert {item["kind"] for item in decisions} <= {"heuristic", "fairness", "bound"}
 
 
 @pytest.mark.asyncio
@@ -150,3 +161,101 @@ async def test_keyboard_confirmation_uses_enter(tmp_path):
     body = snapshot(store, run["id"])
     assert body["status"] == "passed"
     assert body["projection"]["bestVerified"]["interactions"] == 1
+
+
+def _free_port() -> int:
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+
+
+def _serve(module: str, port: int) -> subprocess.Popen:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(REPO) + os.pathsep + env.get("PYTHONPATH", "")
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", f"{module}:app", "--host", "127.0.0.1", "--port", str(port), "--log-level", "warning"],
+        cwd=REPO,
+        env=env,
+    )
+    base = f"http://127.0.0.1:{port}"
+    deadline = time.time() + 15
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(base + "/health", timeout=0.5) as response:
+                if response.status == 200:
+                    return proc
+        except Exception:
+            if proc.poll() is not None:
+                raise RuntimeError(f"{module} exited during startup")
+            time.sleep(0.1)
+    proc.terminate()
+    raise RuntimeError(f"{module} did not become healthy")
+
+
+@pytest.mark.asyncio
+async def test_compatible_endpoint_completes_a_route(orbit_server, tmp_path):
+    port = _free_port()
+    proc = _serve("fixtures.echo_model", port)
+    settings = _settings(tmp_path, orbit_server)
+    store = Store(tmp_path)
+    task = store.create_task(build_task({"mode": "orbit"}, orbit_origin=settings.orbit_origin, model=settings.model))
+    run = store.create_run(task_id=task["id"], policy_id="compatible-v1", idempotency_key="idem-compatible", discovery=True, label="Compatible endpoint")
+    base = f"http://127.0.0.1:{port}/v1"
+    try:
+        async with async_playwright() as playwright:
+            browser = await playwright.chromium.launch(headless=True)
+            try:
+                await execute_run(settings, store, browser, run["id"], lambda ledger: CompatibleChooser(base, store, ledger, run["id"], task))
+            finally:
+                await browser.close()
+    finally:
+        proc.terminate()
+        proc.wait(timeout=5)
+    body = snapshot(store, run["id"])
+    assert body["status"] == "passed", (body["stopReason"], body.get("error"), [item["summary"] for item in body["projection"]["activity"]])
+    route = [item["name"] for item in body["projection"]["witness"]]
+    assert body["projection"]["bestVerified"]["interactions"] == 5, route
+    assert body["usage"]["requests"] == 5, route
+
+
+@pytest.mark.asyncio
+async def test_two_runs_keep_separate_carts(orbit_server, tmp_path):
+    settings = _settings(tmp_path, orbit_server)
+    store = Store(tmp_path)
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            first, second = await asyncio.gather(
+                _run(settings, store, browser, SHORTCUT, "regression.shortcut.v1"),
+                _run(settings, store, browser, SHORTCUT, "regression.shortcut.v1"),
+            )
+        finally:
+            await browser.close()
+    assert first[0]["status"] == "passed"
+    assert second[0]["status"] == "passed"
+    assert first[0]["id"] != second[0]["id"]
+    assert first[0]["projection"]["bestVerified"]["interactions"] == 3
+    assert second[0]["projection"]["bestVerified"]["interactions"] == 3
+
+
+@pytest.mark.asyncio
+async def test_comparison_measures_both_storefronts(orbit_server):
+    port = _free_port()
+    proc = _serve("fixtures.harbor.app", port)
+    try:
+        async with async_playwright() as playwright:
+            browser = await playwright.chromium.launch(headless=True)
+            try:
+                harbor, orbit = await asyncio.gather(
+                    harbor_checkout(browser, f"http://127.0.0.1:{port}"),
+                    orbit_shortcut(browser, orbit_server["url"]),
+                )
+            finally:
+                await browser.close()
+    finally:
+        proc.terminate()
+        proc.wait(timeout=5)
+    assert harbor["status"] == "passed"
+    assert harbor["interactions"] == 4
+    assert orbit["status"] == "passed"
+    assert orbit["interactions"] == 3

@@ -31,6 +31,14 @@ def partition(candidates: list[dict], incumbent_u: int | None) -> tuple[list[dic
     return ready, excluded
 
 
+def claim_exact(seen: set[str], key: str) -> bool:
+    """A completed exact action is not dispatched again. A new attempt is a new key."""
+    if key in seen:
+        return False
+    seen.add(key)
+    return True
+
+
 def choose(ready: list[dict], picks_already: int) -> tuple[dict, str]:
     """Every fifth non-verification selection is the oldest eligible candidate."""
     if (picks_already + 1) % 5 == 0:

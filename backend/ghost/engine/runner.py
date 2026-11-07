@@ -283,7 +283,7 @@ async def _execute(settings, store, browser, run_id: str, chooser_factory) -> No
                 )
                 store.apply(
                     run_id,
-                    records=[("verification", verification["id"], verification)],
+                    records=[("verification", verification["id"], {**verification, "buildId": build_id})],
                     event_type="route_verified",
                     entity_id=verification["id"],
                     summary=f"Replay {verification['status']}",

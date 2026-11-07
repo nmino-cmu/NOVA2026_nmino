@@ -69,6 +69,16 @@ export interface LatestVerification {
   status: string;
   interactions: number | null;
   detail: string;
+  stale?: boolean;
+}
+
+export interface DecisionEntry {
+  id: string;
+  kind: string;
+  reason: string;
+  g: number | null;
+  h: number | null;
+  U: number | null;
 }
 
 export interface Projection {
@@ -80,6 +90,7 @@ export interface Projection {
   edges: GraphEdge[];
   witness: WitnessEntry[];
   checks: CheckEntry[];
+  decisions?: DecisionEntry[];
   activity: ActivityEntry[];
   evidence: EvidenceEntry[];
   limitations: string[];

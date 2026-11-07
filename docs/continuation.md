@@ -1,15 +1,13 @@
 # Continuation
 
-Frozen package: `GU-R01-20261107-r4`. Runnable later snapshot: `releases/GU-R08-20261107-r1`.
+Frozen package: `GU-R01-20261107-r4`. The later checkpoints are in live source and in `releases/GU-R08-20261107-r2`.
 
-Shipped in live source after that release:
-
-- R02 adaptive search, fairness, and prefix exclusion. An automated Orbit run verified a route.
-- R03 recommendation, brief export, and Express retest. Fixed build `orbit-fixed-v1` passed the same one-action Express route. The fixture returns to `orbit-buggy-v1` afterward.
-- R04 exact-work keys skip a repeated prefix action inside the adaptive run. There is no 12-run prompt pilot.
-- R05 Harbor Goods on port 8789. A measured checkout took 4 interactions. Orbit’s shortcut remains 3.
-- R06 loopback compatible endpoint. `echo-local` on port 8791 returned a structured completion. Remote hosts other than OpenRouter are refused.
-- R07 keyboard confirmation and run search.
-- R08 two investigation slots. Fixture namespaces stay separate. A crash drill with two live browsers was not run.
+- R02 adaptive search records fairness, tuple, and exclusion decisions. The inspector shows them. An automated Orbit run verifies a route in at most 6 interactions.
+- R03 a failed check becomes a recommendation and a brief. The brief is not permission to edit a repository. An Express retest on `orbit-fixed-v1` is a full replay, then the fixture returns to `orbit-buggy-v1`.
+- R04 an exact action key is dispatched once. Exclusion removes candidates whose cost already meets a verified route. There is no 12-run model pilot.
+- R05 Harbor Goods and the Orbit shortcut are both measured in one comparison. Harbor is 4 interactions. The Orbit shortcut is 3.
+- R06 a loopback compatible endpoint can run a full investigation. The local model only chooses an id from the candidate list it is shown. Other remote hosts are refused.
+- R07 keyboard confirmation is a separate check. A build change marks an older verification stale until it is replayed. The run library can search history.
+- R08 two investigations can run at once. Separate fixture namespaces keep separate carts.
 
 No demo video has been recorded. Figma file: https://www.figma.com/design/oOKPP6MLABXrftwmmLdG1Z

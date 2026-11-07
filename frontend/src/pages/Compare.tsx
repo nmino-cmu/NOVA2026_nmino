@@ -20,21 +20,22 @@ export function ComparePage() {
   }
 
   const harbor = (result?.harbor ?? null) as { interactions?: number; status?: string; detail?: string } | null;
+  const orbit = (result?.orbit ?? null) as { interactions?: number; status?: string; detail?: string } | null;
 
   return (
     <div>
       <h1 style={{ marginTop: 0 }}>Comparison</h1>
       <p style={{ color: "var(--secondary)" }}>
-        Orbit Supply’s quick order is 3 interactions. Harbor Goods uses its own catalog route. Both are controlled demos.
+        Each storefront is measured in this comparison. Both start logged out and ask for checkout with one Nova Mug.
       </p>
       {error && <div className="error-banner" role="alert">{error}</div>}
       <section className="card">
         <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void run()}>
-          Run Harbor Goods
+          Measure both routes
         </button>
-        {harbor && (
+        {harbor && orbit && (
           <p>
-            Harbor: {harbor.status} · {harbor.interactions ?? "—"} interactions. Orbit shortcut: 3. {String(result?.reason ?? "")}
+            Harbor: {harbor.status} · {harbor.interactions ?? "—"} interactions. Orbit shortcut: {orbit.status} · {orbit.interactions ?? "—"} interactions. {String(result?.reason ?? "")}
           </p>
         )}
       </section>

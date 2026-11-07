@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function Inspector({ projection, selectedNode, onSelectStep, onClose, className = "" }: Props) {
-  const { currentAction, checks, evidence, activity, witness } = projection;
+  const { currentAction, checks, evidence, activity, witness, decisions = [] } = projection;
 
   const nodeEvidence = (selectedNode
     ? evidence.filter((e) => e.label === selectedNode.label)
@@ -91,6 +91,22 @@ export function Inspector({ projection, selectedNode, onSelectStep, onClose, cla
               )}
             </figure>
           ))
+        )}
+      </section>
+
+      <section style={{ marginBottom: 16 }}>
+        <h3 style={{ margin: "0 0 8px", fontSize: "0.875rem", color: "var(--secondary)" }}>Scheduler</h3>
+        {decisions.length === 0 ? (
+          <p style={{ color: "var(--secondary)", fontSize: "0.875rem" }}>No scheduler decisions on this run.</p>
+        ) : (
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {decisions.map((item) => (
+              <li key={item.id} style={{ marginBottom: 8 }}>
+                <span className="check-tag">{item.kind}</span>
+                <div style={{ fontSize: "0.8125rem", color: "var(--secondary)" }}>{item.reason}</div>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

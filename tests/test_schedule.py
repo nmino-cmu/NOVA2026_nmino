@@ -1,4 +1,4 @@
-from ghost.engine.schedule import choose, partition, relevance
+from ghost.engine.schedule import choose, claim_exact, partition, relevance
 
 
 def _item(creation, relevance_class, g, h=0, restore=0):
@@ -45,3 +45,18 @@ def test_clearing_the_incumbent_reactivates_an_exclusion():
     assert excluded
     ready, excluded = partition([item], None)
     assert ready and not excluded
+
+
+def test_exact_work_is_not_dispatched_twice():
+    seen: set[str] = set()
+    assert claim_exact(seen, "Catalog|Nova Mug")
+    assert claim_exact(seen, "Catalog|Nova Mug") is False
+    assert claim_exact(seen, "Catalog|View cart")
+
+
+def test_exclusion_shrinks_the_ready_set():
+    items = [_item(index, 1, index) for index in range(1, 9)]
+    ready, excluded = partition(items, 4)
+    assert len(ready) == 3
+    assert len(excluded) == 5
+    assert len(ready) + len(excluded) == len(items)
