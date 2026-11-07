@@ -5,21 +5,23 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlsplit
 
+from ghost.engine.personas import PERSONAS, SHOP_TASK
+
 DATASET = "orbit-data-1"
 BUDGET_CAPS = {
-    "wallMs": 180_000,
-    "requests": 12,
+    "wallMs": 360_000,
+    "requests": 20,
     "totalTokens": 60_000,
     "browserActions": 180,
     "resets": 12,
 }
 LIMITS = {
-    "routeActions": 12,
+    "routeActions": 16,
     "candidates": 24,
     "scanChunks": 3,
     "controlsPerChunk": 64,
     "familyInstances": 3,
-    "valuesPerField": 2,
+    "valuesPerField": 3,
     "retries": 1,
     "settleMs": 3000,
     "stabilityMs": 1500,
@@ -59,6 +61,8 @@ def evaluate(evaluator_id: str, args: dict, ctx: Ctx) -> dict:
         "browser.start.v1": "Starting page",
         "browser.invariant.v1": "Origin",
         "visible_milestone.v1": "Visible milestone",
+        "shop.cart.v1": "Shop cart",
+        "review.open.v1": "Review coverage",
     }
     if evaluator_id not in names:
         return {"id": evaluator_id, "name": evaluator_id, "ok": False, "status": "failed", "detail": "Unknown evaluator."}
@@ -107,7 +111,7 @@ def _orbit_checkout(args: dict, ctx: Ctx) -> tuple[bool, str]:
         _one_mug(state.get("cart"))
         and state.get("commitCount", 0) >= 1
         and page.get("checkoutFormEnabled") is True
-        and page.get("errorVisible") is not True
+        and page.get("errorVisible") is False
         and state.get("pending") == []
         and state.get("orders") == ctx.baseline_orders
         and state.get("loggedIn") is False
@@ -145,13 +149,46 @@ def _visible_names(page: dict) -> set[str]:
     return {name for name in names if name}
 
 
+def _shop_cart(args: dict, ctx: Ctx) -> tuple[bool, str]:
+    page = ctx.page
+    cart = page.get("cartText") or ""
+    if page.get("errorVisible") is True:
+        return False, "A visible error is showing."
+    required = list(args.get("required") or [])
+    banned = list(args.get("banned") or [])
+    if not required:
+        return False, "No cart items were declared."
+    missing = [item for item in required if item not in cart]
+    if missing:
+        return False, "Cart is missing " + ", ".join(missing) + "."
+    extra = [item for item in banned if item in cart]
+    if extra:
+        return False, "Cart includes a higher-priced alternative: " + ", ".join(extra) + "."
+    try:
+        ceiling = float(page.get("priceCeiling"))
+    except (TypeError, ValueError):
+        return False, "Price ceiling was not reported."
+    limit = float(args.get("maxPrice", 40))
+    if ceiling > limit:
+        return False, f"Price ceiling is {ceiling}, above {limit}."
+    if not any(item.get("name") == "Cart ready" for item in page.get("headings") or []):
+        return False, "The cart summary is not ready."
+    return True, "Cart holds " + ", ".join(required) + f" with the ceiling at {ceiling}."
+
+
 def _milestone(args: dict, ctx: Ctx) -> tuple[bool, str]:
     page = ctx.page
     if args.get("urlIncludes") and args["urlIncludes"] not in (page.get("url") or ""):
         return False, "URL did not match the milestone."
-    if page.get("errorVisible"):
+    if page.get("errorVisible") is True:
         return False, "A visible error is showing."
-    for target in args.get("targets") or []:
+    targets = list(args.get("targets") or [])
+    if not targets:
+        return False, "No milestone target was declared."
+    for item in args.get("cartIncludes") or []:
+        if item not in (page.get("cartText") or ""):
+            return False, f"Cart text is missing {item}."
+    for target in targets:
         if target.get("role") == "heading":
             found = any(item.get("name") == target.get("name") for item in page.get("headings") or [])
         else:
@@ -164,6 +201,31 @@ def _milestone(args: dict, ctx: Ctx) -> tuple[bool, str]:
     return True, "Visible milestone held."
 
 
+def _review_open(args: dict, ctx: Ctx) -> tuple[bool, str]:
+    path = urlsplit(ctx.page.get("url") or "").path or "/"
+    wanted = [str(item).rstrip("/") or "/" for item in (args.get("paths") or [])]
+    current = path.rstrip("/") or "/"
+    if wanted and current not in wanted:
+        return False, f"Opened {path}, which is outside the planned paths."
+    return False, "Coverage is counted from the URLs this run opens. A heading named Done does not pass this review."
+
+
+def note_goal(attempts: list[dict], observation: dict, results: list[dict]) -> tuple[list[dict], bool, bool]:
+    """Keep a failed goal result. The same URL and detail are not stored twice."""
+    detail = results[0].get("detail") if results else "No goal check was declared."
+    ok = bool(results) and all(item.get("ok") for item in results)
+    attempt = {
+        "ok": ok,
+        "detail": str(detail or "")[:300],
+        "url": str(observation.get("url") or "")[:300],
+        "cartText": str(observation.get("cartText") or "")[:240],
+        "priceCeiling": observation.get("priceCeiling"),
+    }
+    if attempts and attempts[-1].get("detail") == attempt["detail"] and attempts[-1].get("url") == attempt["url"]:
+        return attempts, ok, False
+    return [*attempts, attempt][-16:], ok, True
+
+
 _IMPL = {
     "orbit.initial.v1": _orbit_initial,
     "orbit.invariants.v1": _orbit_invariants,
@@ -171,6 +233,8 @@ _IMPL = {
     "browser.start.v1": _browser_start,
     "browser.invariant.v1": _browser_invariant,
     "visible_milestone.v1": _milestone,
+    "shop.cart.v1": _shop_cart,
+    "review.open.v1": _review_open,
 }
 
 EVALUATORS = [
@@ -182,6 +246,8 @@ EVALUATORS = [
     {"id": "browser.start.v1", "kind": "initial", "args": {"urlIncludes": "string", "absentNames": ["string"]}},
     {"id": "browser.invariant.v1", "kind": "invariant", "args": {}},
     {"id": "visible_milestone.v1", "kind": "goal", "args": {"urlIncludes": "string", "targets": [{"role": "heading", "name": "string"}]}},
+    {"id": "shop.cart.v1", "kind": "goal", "args": {"required": ["string"], "banned": ["string"], "maxPrice": 40}},
+    {"id": "review.open.v1", "kind": "goal", "args": {"paths": ["string"]}},
 ]
 
 
@@ -204,7 +270,7 @@ def _acceptable(raw: object) -> int | None:
         return None
     value = int(raw)
     if not 1 <= value <= LIMITS["routeActions"]:
-        raise ValueError("acceptableInteractions must be from 1 to 12, or empty.")
+        raise ValueError(f"acceptableInteractions must be from 1 to {LIMITS['routeActions']}, or empty.")
     return value
 
 
@@ -223,6 +289,18 @@ def _base(draft: dict, mode: str) -> dict:
 
 def build_task(draft: dict, *, orbit_origin: str, model: str) -> dict:
     mode = draft.get("mode")
+    if mode == "shop":
+        draft = {
+            **draft,
+            "mode": "supplied",
+            "url": draft.get("url") or (orbit_origin.rstrip("/") + "/shop"),
+            "targetName": draft.get("targetName") or "Cart ready",
+            "restoration": draft.get("restoration") or "fresh_context",
+            "objective": draft.get("objective") or "Add a notebook, a ballpoint pen, and a ceramic mug. Do not sign in or order.",
+            "task": draft.get("task") or SHOP_TASK,
+            "queries": draft.get("queries") or ["notebook"],
+        }
+        mode = "supplied"
     if mode == "orbit":
         task = _base({**draft, "model": model}, "orbit")
         if not task["objective"]:
@@ -255,9 +333,7 @@ def build_task(draft: dict, *, orbit_origin: str, model: str) -> dict:
     parts = urlsplit(url)
     if parts.scheme not in {"http", "https"} or not parts.netloc:
         raise ValueError("Supplied URL must be http or https.")
-    target = (draft.get("targetName") or "").strip()
-    if not target:
-        raise ValueError("A visible target name is required.")
+    target = (draft.get("targetName") or draft.get("heading") or "").strip()
     restoration = draft.get("restoration") or "unknown"
     if restoration not in {"fresh_context", "unknown"}:
         raise ValueError("Restoration must be fresh_context or unknown.")
@@ -267,6 +343,73 @@ def build_task(draft: dict, *, orbit_origin: str, model: str) -> dict:
         task["objective"] = f"Reach a page where {target} is visible."
     if not task["task"]:
         task["task"] = task["objective"]
+    persona = (draft.get("persona") or "").strip()
+    profile = (draft.get("personaProfile") or "").strip()[:1200]
+    if persona and persona not in PERSONAS and not profile:
+        raise ValueError("Unknown persona.")
+    queries = []
+    for raw in draft.get("queries") or []:
+        text = str(raw).strip()[:80]
+        if text:
+            queries.append(text)
+    if len(queries) > 3:
+        raise ValueError("At most 3 search queries.")
+    if not profile and persona in PERSONAS:
+        profile = PERSONAS[persona]
+    if profile:
+        task["task"] = f"{task['task']}\n\nPersona profile:\n{profile}"
+    shop = parts.path.rstrip("/") == "/shop" and (parts.hostname or "").lower() in {"127.0.0.1", "localhost"}
+    check = str(draft.get("check") or "").strip()
+    if check not in {"shop", "heading", "explore"}:
+        check = "shop" if shop else "heading"
+    if check == "shop" and not shop:
+        check = "explore"
+    paths = []
+    for raw_path in draft.get("paths") or []:
+        text = str(raw_path).strip()[:120]
+        if text:
+            paths.append(text)
+        if len(paths) >= 8:
+            break
+    heading = (draft.get("heading") or target).strip()
+    if check == "heading" and not heading:
+        raise ValueError("A visible target name is required.")
+    if check == "shop" and not target:
+        target = "Cart ready"
+    goal_args = {"urlIncludes": parts.path or "/", "targets": [{"role": "heading", "name": heading or target}]}
+    if draft.get("cartIncludes"):
+        goal_args["cartIncludes"] = [str(item) for item in draft["cartIncludes"]][:6]
+    if check == "shop":
+        goal = {
+            "id": "shop.cart.v1",
+            "version": 1,
+            "args": {
+                "required": ["Field notebook $4", "Basic ballpoint pen $2", "Ceramic mug $6"],
+                "banned": ["Leather notebook $18", "Gel pen $9", "Travel mug $22"],
+                "maxPrice": 40,
+            },
+        }
+        initial_args = {"urlIncludes": parts.path or "/", "absentNames": ["Cart ready"]}
+        checks = [
+            {"id": "browser.start.v1", "label": "Fresh shop page, cart not ready"},
+            {"id": "shop.cart.v1", "label": "Cheaper notebook, ballpoint, and ceramic mug under the price ceiling"},
+        ]
+    elif check == "explore":
+        goal = {"id": "review.open.v1", "version": 1, "args": {"paths": paths}}
+        initial_args = {"urlIncludes": parts.path or "/"}
+        checks = [
+            {"id": "browser.start.v1", "label": "Starting page opened"},
+            {"id": "review.open.v1", "label": "Coverage comes from visited URLs"},
+        ]
+        if not task["objective"]:
+            task["objective"] = (task["task"] or "Review the pages relevant to the request.")[:240]
+    else:
+        goal = {"id": "visible_milestone.v1", "version": 1, "args": goal_args}
+        initial_args = {"urlIncludes": parts.path or "/", "absentNames": [heading or target]}
+        checks = [
+            {"id": "browser.start.v1", "label": "Fresh page without the milestone"},
+            {"id": "visible_milestone.v1", "label": f"{heading or target} is visible"},
+        ]
     task.update(
         {
             "url": url,
@@ -274,15 +417,20 @@ def build_task(draft: dict, *, orbit_origin: str, model: str) -> dict:
             "restoration": "browser_context" if restoration == "fresh_context" else "unknown",
             "strictReplay": restoration == "fresh_context",
             "actionPolicy": {"id": "browser.activate.v1", "version": 1},
-            "initial": [{"id": "browser.start.v1", "version": 1, "args": {"urlIncludes": parts.path or "/", "absentNames": [target]}}],
-            "goal": [{"id": "visible_milestone.v1", "version": 1, "args": {"urlIncludes": parts.path or "/", "targets": [{"role": "heading", "name": target}]}}],
+            "initial": [{"id": "browser.start.v1", "version": 1, "args": initial_args}],
+            "goal": [goal],
             "invariants": [{"id": "browser.invariant.v1", "version": 1, "args": {}}],
             "reset": {"id": "browser.reset.v1", "version": 1, "args": {"mode": "fresh_context"}},
-            "checks": [
-                {"id": "browser.start.v1", "label": "Fresh page without the milestone"},
-                {"id": "visible_milestone.v1", "label": f"{target} is visible"},
-            ],
+            "checks": checks,
             "datasetVersion": None,
+            "persona": persona or None,
+            "personaProfile": profile,
+            "personaName": (draft.get("personaName") or "").strip()[:80],
+            "personaPriorities": (draft.get("personaPriorities") or "").strip()[:800],
+            "queries": queries,
+            "check": check,
+            "coveragePaths": paths,
+            "namespaceHeader": (str(draft.get("namespaceHeader")).strip() if draft.get("namespaceHeader") else None),
         }
     )
     if restoration == "unknown":

@@ -22,6 +22,7 @@ class Settings:
     orbit_origin: str
     control_token: str
     planner_images: bool
+    public_demo: bool
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -45,4 +46,5 @@ class Settings:
             orbit_origin=origin.rstrip("/"),
             control_token=token,
             planner_images=os.environ.get("GHOST_PLANNER_IMAGES") == "1",
+            public_demo=os.environ.get("GHOST_PUBLIC_DEMO") == "1",
         )

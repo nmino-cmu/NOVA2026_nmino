@@ -11,6 +11,9 @@ ALLOWED_PURPOSES = {
     "ui_review",
     "recommendation",
     "prompt_eval",
+    "investigation_plan",
+    "persona_report",
+    "followup",
 }
 
 _CODE = re.compile(

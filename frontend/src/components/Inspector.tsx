@@ -1,4 +1,4 @@
-import type { GraphNode, Projection } from "../types/api";
+import type { Budget, GraphNode, Projection, Usage } from "../types/api";
 import { evidenceUrl } from "../api/client";
 
 function checkClass(status: string): string {
@@ -10,13 +10,16 @@ function checkClass(status: string): string {
 
 interface Props {
   projection: Projection;
+  budget?: Budget;
+  usage?: Usage;
+  stopReason?: string | null;
   selectedNode: GraphNode | null;
   onSelectStep?: (name: string) => void;
   onClose?: () => void;
   className?: string;
 }
 
-export function Inspector({ projection, selectedNode, onSelectStep, onClose, className = "" }: Props) {
+export function Inspector({ projection, budget, usage, stopReason, selectedNode, onSelectStep, onClose, className = "" }: Props) {
   const { currentAction, checks, evidence, activity, witness, decisions = [] } = projection;
 
   const nodeEvidence = (selectedNode
@@ -31,7 +34,41 @@ export function Inspector({ projection, selectedNode, onSelectStep, onClose, cla
           Close
         </button>
       )}
-      <h2 style={{ margin: "0 0 8px", fontSize: "1rem" }}>Inspector</h2>
+      <h2 style={{ margin: "0 0 8px", fontSize: "1rem" }}>Evidence</h2>
+      {projection.identity && (
+        <section style={{ marginBottom: 16 }}>
+          <h3 style={{ margin: "0 0 8px", fontSize: "0.875rem", color: "var(--secondary)" }}>Identity</h3>
+          <p>{projection.identity.goal}</p>
+          <p style={{ color: "var(--secondary)" }}>
+            {projection.identity.policyId} · build {projection.identity.buildId || "—"} · model {projection.identity.model || "—"} · prompt {projection.identity.promptSet || "—"}
+          </p>
+          {projection.identity.persona && <p>Persona {projection.identity.persona}</p>}
+          {(projection.identity.queries || []).length > 0 && <p>Searches: {projection.identity.queries?.join(", ")}</p>}
+        </section>
+      )}
+      {(budget || usage) && (
+        <section style={{ marginBottom: 16 }}>
+          <h3 style={{ margin: "0 0 8px", fontSize: "0.875rem", color: "var(--secondary)" }}>Budget</h3>
+          <p>
+            {usage?.browserActions ?? 0} / {budget?.browserActions ?? "—"} browser actions · {usage?.requests ?? 0} / {budget?.requests ?? "—"} requests · {usage?.resets ?? 0} resets · {usage?.elapsedMs ?? 0} ms
+          </p>
+          <p style={{ color: "var(--secondary)" }}>Stop: {stopReason || "—"} · tokens {usage?.tokenAccounting || "unknown"} · spend {usage?.spendingAccounting || "unknown"}</p>
+          {projection.limitations.map((item) => <p key={item} style={{ color: "var(--secondary)" }}>{item}</p>)}
+        </section>
+      )}
+      {projection.routes && (
+        <section style={{ marginBottom: 16 }}>
+          <h3 style={{ margin: "0 0 8px", fontSize: "0.875rem", color: "var(--secondary)" }}>Routes</h3>
+          <p>Best verified: {projection.routes.best ? `${projection.routes.best.interactions} interactions, ${projection.routes.best.status}` : "none"}</p>
+          <p>Failed attempts: {projection.routes.failed?.length ?? 0}. Historical: {projection.routes.historical?.length ?? 0}. Other candidates: {projection.routes.candidates?.length ?? 0}.</p>
+          {(projection.routes.failed || []).map((item) => (
+            <p key={item.verificationId} style={{ color: "var(--secondary)" }}>{item.detail}</p>
+          ))}
+          {(projection.routes.historical || []).map((item) => (
+            <p key={item.verificationId}>Older {item.buildId || "build"} result, {item.interactions} interactions. Not the current result.</p>
+          ))}
+        </section>
+      )}
       {selectedNode ? (
         <div style={{ marginBottom: 16 }}>
           <div style={{ fontWeight: 600 }}>{selectedNode.label}</div>

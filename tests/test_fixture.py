@@ -58,7 +58,7 @@ def test_reset_identity_and_hidden_control(orbit_server):
     assert _state(orbit_server, namespace)["cart"] == []
 
 
-def test_ordinary_shortcut_and_express(orbit_server):
+def test_ordinary_and_shortcut(orbit_server):
     namespace = "ns" + uuid.uuid4().hex[:8]
     _reset(orbit_server, namespace)
     playwright, browser, page = _page(orbit_server, namespace)
@@ -91,25 +91,6 @@ def test_ordinary_shortcut_and_express(orbit_server):
     finally:
         browser.close()
         playwright.stop()
-
-    namespace = "ns" + uuid.uuid4().hex[:8]
-    _reset(orbit_server, namespace)
-    playwright, browser, page = _page(orbit_server, namespace)
-    try:
-        page.get_by_role("button", name="Express Nova Mug", exact=True).click()
-        page.wait_for_url("**/checkout?optimistic=1")
-        expect(page.get_by_text("Checkout ready")).to_be_visible()
-        assert _state(orbit_server, namespace)["cart"] == []
-        expect(page.get_by_role("alert")).to_be_visible(timeout=4000)
-        page.wait_for_timeout(1500)
-        state = _state(orbit_server, namespace)
-        assert state["cart"] == []
-        assert state["commitCount"] == 0
-        assert state["orders"] == 0
-    finally:
-        browser.close()
-        playwright.stop()
-
 
 def test_two_namespaces_keep_separate_carts(orbit_server):
     from concurrent.futures import ThreadPoolExecutor

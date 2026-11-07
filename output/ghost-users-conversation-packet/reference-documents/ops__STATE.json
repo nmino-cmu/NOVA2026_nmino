@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-11-07T14:05:00-05:00",
+  "recordedAtUtc": "2026-11-07T19:05:00+00:00",
+  "deadline": "2026-11-07T17:00:00-05:00",
+  "activeStage": "R08",
+  "contract": "v1",
+  "selectedRelease": "GU-R01-20261107-r4",
+  "latestOutcome": "Partial. The live UI no longer treats a failed Express replay as verified or a passed run as full coverage. Shop cart checks, adaptive fill/drag, and a 32-test suite passed. Efficiency study, UI review, general keyboard policy, worker isolation, a new OpenRouter investigation, and the demo video are not done.",
+  "evidenceRuns": {
+    "liveModel": "run_c6252c9a4a6e4ba2",
+    "expressRetestFixed": "run_5acca512515c41a2"
+  },
+  "figma": "https://www.figma.com/design/oOKPP6MLABXrftwmmLdG1Z",
+  "video": "not_recorded",
+  "suite": "32 passed; not the definition of completion"
+}

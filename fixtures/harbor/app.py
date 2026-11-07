@@ -58,11 +58,11 @@ def create_app() -> FastAPI:
     @app.get("/checkout", response_class=HTMLResponse)
     def checkout(request: Request):
         items = _carts.get(_ns(request)) or []
-        ready = len(items) == 1 and items[0]["sku"] == "nova-mug"
+        ready = len(items) == 1 and items[0]["sku"] == "nova-mug" and items[0].get("qty") == 1
         if ready:
-            body = "<h1>Checkout</h1><p data-ready='true'>Checkout is ready for one Nova Mug.</p><button type='button' disabled>Place order</button>"
+            body = "<h1>Checkout</h1><h2>Checkout ready</h2><p id='bag'>In the cart: Nova Mug × 1</p><p data-ready='true'>Checkout is ready for one Nova Mug.</p><button type='button' disabled>Place order</button>"
         else:
-            body = "<h1>Checkout</h1><p role='alert'>The cart is not ready.</p>"
+            body = "<h1>Checkout</h1><p id='bag'>In the cart:</p><p role='alert'>The cart is not ready.</p>"
         return page("Checkout", body)
 
     @app.post("/control/reset")

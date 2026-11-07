@@ -1,0 +1,78 @@
+{
+  "sourceId": "C05",
+  "id": "6aef4a82-8dd8-83ea-858a-d84a76b47252",
+  "title": "CMU Figma AI Access",
+  "kind": "chatgpt",
+  "createdAt": 1794067075.192669,
+  "updatedAt": 1794068200.963009,
+  "page": {
+    "order": "newest_first",
+    "limit": 10,
+    "nextCursor": null,
+    "hasMore": false
+  },
+  "turns": [
+    {
+      "id": "0c4a9164-590d-4032-bbb4-3b757a78dd11",
+      "turn": 1,
+      "startedAt": 1794067078.777,
+      "completedAt": 1794067078.777,
+      "status": "completed",
+      "messages": [
+        {
+          "id": "0c4a9164-590d-4032-bbb4-3b757a78dd11",
+          "role": "user",
+          "phase": null,
+          "text": "do I get free figma AI from CMU?",
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "06c18769-c8cf-4b15-8ca2-97b08b332778",
+      "turn": 2,
+      "startedAt": 1794067125.412407,
+      "completedAt": 1794067178.850512,
+      "status": "completed",
+      "messages": [
+        {
+          "id": "06c18769-c8cf-4b15-8ca2-97b08b332778",
+          "role": "user",
+          "phase": null,
+          "text": "continue working, also search my emails",
+          "truncated": false
+        },
+        {
+          "id": "2b0f918f-65c5-46fd-adf2-1880972b07b6",
+          "role": "assistant",
+          "phase": null,
+          "text": "**Yes. Your CMU email confirms that you already have access to Figma's free Education plan.** Whether that includes unlimited Figma AI usage is a separate question.\n\nI found these emails in your `nmino@andrew.cmu.edu` inbox\\:\n\n- **April 17, 2026\\:** urlWelcome to Figma for Educationhttps://mail.google.com/mail/u/?authuser=nmino%40andrew.cmu.edu#all/19d9b92fd256f7e9\\. Figma confirms that you're verified as a student and have access to its Education plan.\n- **April 9, 2026\\:** urlYour AI credits are waiting for you!https://mail.google.com/mail/u/?authuser=nmino%40andrew.cmu.edu#all/19d71e8ee8f8a979\\. Figma explicitly mentions AI credits.\n- **April 21, 2026\\:** urlGet started with the Figma Education planhttps://mail.google.com/mail/u/?authuser=nmino%40andrew.cmu.edu#all/19dad9ec9bf2bd88\\.\n\nThis establishes your student eligibility and existing Education access, rather than merely suggesting that CMU students might qualify.\n\n## What you get\n\nMonthly Figma AI credits\n\n# 3,000\n\nFree with your verified higher-education account, resetting monthly. citeturn713056search0turn713056search1\n\n| Feature | Education access |\n|--------|--------|\n| Figma Professional design features | Free |\n| Figma Make (prompt-to-app) | Included |\n| Figma AI design agent | Included |\n| AI image generation/editing | Included, subject to feature availability |\n| FigJam AI diagrams and templates | Included |\n| Unlimited AI generation | No, 3,000-credit monthly limit |\n\nFigma's current documentation confirms these benefits for eligible university students. citeturn713056search1turn713056search3turn713056search7\n\n## How to activate and check\n\n1. Sign in to urlFigmahttps://www.figma.com/ using your CMU-associated account.\n2. Make sure you've created or joined an **Education team**\\. Your welcome email explicitly requires this to unlock Professional features.\n3. Open a file, select the main menu, then **AI balance** to see your remaining credits and reset date.\n4. Open urlFigma Makehttps://www.figma.com/make/ to begin generating a UI.\n\nIf AI features are unavailable, Figma may require you to complete its updated student verification process. citeturn713056search0turn713056search1\n\n**For your NOVA hackathon dashboard\\:** You can use Figma Make to generate and iterate on interactive UI prototypes without paying for a Professional subscription, within the monthly credit allowance. I cannot determine your actual remaining credit balance from email alone.",
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "ae116510-ac66-45c3-89c4-fb7715143b1d",
+      "turn": 3,
+      "startedAt": 1794067280,
+      "completedAt": 1794067307.30245,
+      "status": "completed",
+      "messages": [
+        {
+          "id": "ae116510-ac66-45c3-89c4-fb7715143b1d",
+          "role": "user",
+          "phase": null,
+          "text": "can I get codex or cursor to inferface with figma",
+          "truncated": false
+        },
+        {
+          "id": "12ec23d3-3671-48db-9fd2-625862a5fe11",
+          "role": "assistant",
+          "phase": null,
+          "text": "**Yes. Both OpenAI Codex and Cursor can interface directly with Figma through Figma's official MCP server.** It supports bidirectional workflows, not just reading screenshots or exporting designs.\n\nYou can use either coding agent to\\:\n\n- **Figma → Code\\:** Read a design's components, layouts, styles, and variables, then implement it in React/TypeScript.\n- **Code → Figma\\:** Send an existing web interface into Figma as editable design layers.\n- **Agent → Figma\\:** Create and modify frames, components, auto layouts, and other native Figma objects.\n- **Figma Make → Code\\:** Retrieve design context from AI-generated prototypes and use it for implementation. citeturn315070search0turn315070search3turn315070search5turn315070search9\n\n## Set up either integration\n\nimage_group{\"query\":[\"OpenAI Codex logo app icon\"],\"aspect_ratio\":\"1:1\",\"layout\":\"carousel\",\"num_per_query\":1}\n\n**OpenAI Codex**\n\nIn the Codex desktop app: **Plugins → Figma → Install → Allow access**\\.\n\nOr using the Codex CLI\\:\n\n```bash\ncodex mcp add figma --url https://mcp.figma.com/mcp\n```\n\nurlOfficial Codex setup guidehttps://help.figma.com/hc/en-us/articles/39888629089175-Codex-and-Figma-Set-up-the-MCP-server\n\n---\n\nimage_group{\"query\":[\"Cursor AI code editor app logo icon\"],\"aspect_ratio\":\"1:1\",\"layout\":\"carousel\",\"num_per_query\":1}\n\n**Cursor**\n\nOpen Cursor chat and enter\\:\n\n```text\n/add-plugin figma\n```\n\nThen go to **Cursor Settings → Tools &amp; MCP → Connect** next to Figma, and authorize your account.\n\nurlOfficial Cursor setup guidehttps://help.figma.com/hc/en-us/articles/39889260656407-Cursor-and-Figma-Set-up-the-MCP-server\n\nThe remote Figma MCP endpoint is `https://mcp.figma.com/mcp` for both tools. You do not need the Figma desktop app. citeturn315070search0turn315070search9\n\n## Limits on your free Education plan\n\n| Resource | Limit |\n|--------|--------|\n| Figma MCP reads | 200 per day |\n| MCP request rate | 10 per minute |\n| Figma AI credits | 3,000 per month |\n| Most MCP read/write operations | No AI credit cost |\n| Figma Make AI generation | Consumes AI credits |\n\nWriting to Figma is currently free during its beta, but Figma says it will eventually become usage-based paid functionality. Writing outside drafts also requires a Full seat. citeturn311879search0turn311879search3turn311879search13\n\n## Recommended workflow for your NOVA dashboard\n\n**Figma Design**\n\nVisual exploration, components, layouts, dashboard prototypes\n\nFigma MCP\n\n**Codex or Cursor**\n\nImplement React components, charts, workflows, interactions\n\nCode-to-design iteration\n\n**Running application**\n\nReal data, interactive graph visualizations, backend and AI agents\n\nI'd use Figma as the visual design workspace and Git as the source of truth for executable code. That avoids treating Figma-generated code as production-ready or trying to maintain two independent implementations.\n\nYou can tell Codex\\:\n\n> Use the connected Figma MCP server to read the selected dashboard design, implement it in my React application using reusable components, and preserve the design's spacing, typography, and interactions. Do not modify backend logic.\n\nFor your three-computer setup, this also allows one computer to focus on UI design while another implements the interface. Both agents can use the same Figma files, subject to permissions and rate limits.",
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

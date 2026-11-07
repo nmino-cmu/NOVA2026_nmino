@@ -17,9 +17,12 @@ def _item(creation, relevance_class, g, h=0, restore=0):
 
 def test_relevance_matches_task_words_and_leaves_unknowns():
     text = "Reach checkout with exactly one Nova Mug. Do not place an order."
-    assert relevance("Express Nova Mug", text) == 0
+    assert relevance("Quick order", text) == 0
     assert relevance("Catalog", text) == 1
     assert relevance("More", text) == 1
+    shop = "Add a notebook, a ballpoint pen, and a ceramic mug. Use the search box for the notebook."
+    assert relevance("Pens", shop) == 0
+    assert relevance("Mugs", shop) == 0
 
 
 def test_every_fifth_choice_is_the_oldest():

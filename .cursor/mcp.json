@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "qwen35-mtp": {
+      "command": "/Users/nicholasmino/ProgrammingFiles/Local_AI_Systems/Gateway Router/.venv/bin/python",
+      "args": [
+        "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/mcp/qwen35_mtp_server.py"
+      ],
+      "env": {
+        "QWEN35_MTP_PORT": "18092",
+        "QWEN35_MTP_BLOCK": "3"
+      }
+    }
+  }
+}

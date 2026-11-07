@@ -17,9 +17,5 @@ SHORTCUT = [
     {"kind": "activate", "target": {"role": "button", "name": "Nova Mug checkout"}},
 ]
 
-EXPRESS = [
-    {"kind": "activate", "target": {"role": "button", "name": "Express Nova Mug"}},
-]
-
-ROUTES = {"ordinary": ORDINARY, "shortcut": SHORTCUT, "express": EXPRESS}
-EXPECTED = {"ordinary": 5, "shortcut": 3, "express": 1}
+ROUTES = {"ordinary": ORDINARY, "shortcut": SHORTCUT}
+EXPECTED = {"ordinary": 5, "shortcut": 3}

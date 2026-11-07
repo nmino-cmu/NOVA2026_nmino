@@ -1,0 +1,35 @@
+{
+  "selected": "GU-R01-20261107-r4",
+  "releases": [
+    {
+      "id": "GU-R01-20261107-r1",
+      "stage": "R01",
+      "status": "failed"
+    },
+    {
+      "id": "GU-R01-20261107-r2",
+      "stage": "R01",
+      "status": "failed"
+    },
+    {
+      "id": "GU-R01-20261107-r3",
+      "stage": "R01",
+      "status": "failed"
+    },
+    {
+      "id": "GU-R01-20261107-r4",
+      "stage": "R01",
+      "status": "frozen"
+    },
+    {
+      "id": "GU-R08-20261107-r1",
+      "stage": "R08",
+      "status": "snapshot"
+    },
+    {
+      "id": "GU-R08-20261107-r2",
+      "stage": "R08",
+      "status": "snapshot"
+    }
+  ]
+}

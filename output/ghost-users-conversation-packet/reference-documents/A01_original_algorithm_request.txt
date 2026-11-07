@@ -1,0 +1,249 @@
+I am building an open-source browser testing and product-analysis application for NOVA, a six-hour hackathon. Refine its graph algorithm into a precise, implementable design. Treat this as both algorithm design and an adversarial correctness review.
+I value correctness, clear assumptions, measurable usefulness, and a working implementation over impressive terminology. Challenge weak premises. Do not declare an approach novel, optimal, safe, or statistically reliable without establishing the conditions that make that claim valid. Do not give me a long menu of techniques without choosing a coherent algorithm.
+No implementation or performance result should be assumed to exist already.
+The product should let a developer provide:
+- An application URL, including localhost.
+- A task or longer-term objective.
+- Starting conditions, allowed actions, and success criteria.
+- Metrics such as clicks, completion, latency, reproducible failures, or keyboard accessibility.
+- Optional competitor URLs.
+- An inference provider: a strong cloud model, a compatible custom endpoint, or local Qwen 27B at 8-bit.
+It should:
+- Perform bounded reconnaissance with deterministic crawlers and inexpensive interpretation.
+- Learn a partial graph of meaningful application states and observed actions.
+- Direct expensive reasoning toward useful unresolved questions.
+- Adapt exploration to the selected objective.
+- Reduce redundant browser actions and model processing.
+- Verify candidate workflows and suspected failures.
+- Produce interactive workflow graphs, evidence, comparisons, and recommendations.
+The polished interface begins with guided setup and becomes a dashboard with preset widgets. The graph should visibly grow, change priorities, defer branches, reactivate branches, and highlight verified routes. Clicking a graph element should open its observations and evidence.
+Users review, edit, and select recommendations. Coding-agent handoff occurs only after the user explicitly authorizes the selected implementation scope. After implementation, the same task can be rerun. This is downstream context, not the algorithm's main implementation burden.
+The actual runner, graph engine, and dashboard should be self-hostable. A required proprietary testing backend is outside the intended design. Model inference and hardware are still real costs.
+Resources:
+- Six hours for a useful hackathon submission, with cumulative working versions.
+- Three independent workstreams: backend, UI, and evaluation/presentation.
+- Ample development-model access. Runtime efficiency must still be evaluated under controlled budgets.
+- Cloud inference for the primary presentation.
+- Local Qwen support as a portability target; do not assume equivalent browser-task performance.
+- Existing browser infrastructure such as Playwright may be reused.
+- Background resource-aware scheduling is deferred.
+- Native mobile/desktop automation is outside the first browser implementation.
+Concentrate on a small algorithm module with a stable interface. Do not design an entire frontend or a general agent framework.
+The main initial mode is:
+Given an application, explicit starting conditions, a goal predicate, and an evaluation budget, find a verified feasible workflow with low user-interaction cost while spending as little investigation computation as practical.
+For example:
+- Start logged out, with an empty cart.
+- Add a specified product and reach a specified checkout milestone.
+- Find a shorter valid workflow under the allowed interaction model.
+- Compare it with an equivalent competitor workflow.
+Success could mean reaching the checkout form or completing a test order. These are different tasks. Do not leave the terminal predicate ambiguous.
+Separate:
+1. The cost of a user's workflow.
+2. The cost of discovering, interpreting, and verifying that workflow.
+Do not combine clicks, dollars, latency, and uncertainty in an arbitrary unnormalized weighted sum. Recommend an explicit constrained, lexicographic, or multiobjective formulation, and explain why it suits the first implementation.
+Define what counts as an allowed user action. Do not obtain a fictitious zero-click workflow by jumping to URLs, setting internal state, invoking private APIs, or injecting JavaScript in ways excluded by the task. Fixture resets may be available for testing, but are not consumer workflow steps; account for their evaluation cost separately. Preserve underlying action counts when collapsing workflows into macros.
+The application is initially unknown, partially observed, and potentially stateful or nondeterministic.
+Available observations may include:
+- URL, DOM structure, accessible roles and names.
+- Visible values and enabled/disabled controls.
+- Screenshots when visual information matters.
+- Browser console and network events.
+- Measured frontend timing or coverage when instrumentation is available.
+- Relevant interaction history and test-fixture metadata.
+A URL is not a complete application state. Two similar screens can differ in authentication, permissions, cart contents, form validity, server data, pending requests, or session history.
+Specify:
+- Concrete environment state versus observable state.
+- Abstract graph nodes versus history-dependent belief or context.
+- What an edge represents and how its cost is defined.
+- Observed transitions versus unexecuted actions and hypothesized connections.
+- Evidence provenance and the replay witness for an observation.
+- Version, environment, account, viewport, and other relevant conditions.
+Do not silently treat visual similarity as behavioral equivalence. Explain how aliases are detected, how an abstract state can be split, and what the simple MVP does when state equivalence cannot be established.
+An abstract graph path can concatenate edges witnessed in incompatible concrete states. Explain how you prevent or detect that failure before reporting a verified workflow.
+Start with a finite, resettable, predominantly deterministic test application if needed. State exactly which conclusions depend on those restrictions.
+Do not assume a crawler can enumerate everything reachable. Forms, data combinations, roles, and dynamic behavior can create effectively unbounded state spaces.
+Design inexpensive reconnaissance that runs alongside adaptive investigation:
+- Discover actionable controls and candidate transitions.
+- Avoid blindly clicking every button.
+- Recognize repeated structures without assuming all instances behave identically.
+- Preserve unexplored and inaccessible regions explicitly.
+- Request semantic reasoning when deterministic inspection is insufficient.
+Explain when further cheap scanning is worthwhile and when it becomes wasted effort. Do not postpone all goal-directed work until an exhaustive crawl finishes.
+Choose one implementable MVP policy and one justified extension.
+Candidate foundations include lazy shortest-path evaluation, bounded best-first exploration, cost-aware experimental selection, structured state abstraction, and reusable verified routes. These are suggestions, not requirements.
+The policy may choose among:
+- Exploring an unexecuted action or frontier.
+- Inspecting a page region or retrieving evidence.
+- Selecting an evaluator or inference level.
+- Executing a known sequence.
+- Restoring prerequisites.
+- Probing an ambiguous state.
+- Verifying a candidate route or failure.
+- Stopping.
+For the selected policy, define:
+- Available information at each decision.
+- Candidate generation.
+- Priority or selection rule.
+- How estimates are initialized and updated.
+- Cold start before a feasible route is known.
+- Handling failed actions and unexpected transitions.
+- Replanning and stale priorities.
+- Cycles and zero-cost actions.
+- Budget exhaustion, timeouts, and bounded retries.
+- Starvation prevention for uncertain branches.
+- Termination and the meaning of its result.
+Estimated usefulness or uncertainty is acceptable as a heuristic. Identify how it is estimated, how it could fail, and which decisions do not depend on its calibration.
+Avoid pretending an immediately unproductive probe has no long-term value. Explain the limitations of myopic improvement-per-token rankings.
+Use separate concepts for:
+- Search exclusions justified by a bound.
+- Heuristic deferral.
+- State aggregation or approximate abstraction.
+- Rendering-only graph grouping.
+- Preservation of raw observations for future goals.
+Let U be the cost of an incumbent verified route under specified conditions. For a particular executed or valid candidate prefix p, g(p) is its known cost and h_lower(p) is a justified lower bound on completion cost.
+Explain when the rule
+g(p) + h_lower(p) >= U
+allows excluding extensions of that prefix when seeking a strictly shorter solution. State the deterministic, feasibility, nonnegative-cost, and bound assumptions needed. Explain why this is not a general license to permanently remove its final abstract node.
+Address these traps explicitly:
+- An LLM relevance judgment is not automatically an admissible heuristic.
+- A shortest known distance in an incomplete graph need not lower-bound the true application distance.
+- No observed route to the goal does not imply actual unreachability.
+- A discovered shortest prefix is not necessarily the true shortest prefix.
+- A new transition or shorter arrival history can change a node's relevance.
+- Merged states can invalidate otherwise plausible graph arguments.
+- A single successful stochastic trial does not establish a reliable route or an expected-cost bound.
+If using an optimistic shortest-path lower bound L, explain when L <= C* <= U is valid. In particular, distinguish a complete candidate graph with valid optimistic edge bounds from a graph that omits unknown transitions.
+Explain what additional assumptions would justify a certificate, an epsilon-suboptimal result, or a probability statement. If those assumptions are absent, return a scoped claim such as best verified route found under this budget.
+Heuristic stopping is allowed, but must not be presented as proof that no better route exists.
+Analyze total model usage across all agents, extractors, planning calls, retries, and verifications. Do not hide costs in a small preprocessing model.
+Consider:
+- Structured page observations.
+- Relevant DOM deltas and event-triggered re-observation.
+- Retrieving a bounded graph neighborhood and supporting evidence.
+- Screenshot use only where visual information is needed.
+- Reusable action sequences with checked preconditions.
+- Shared evidence across several product questions.
+- Duplicate-investigation prevention.
+- Repairing a failed step without unnecessarily restarting.
+- Compact intermediate outputs and code-generated metrics.
+- Cache invalidation and selective revalidation after changes.
+- A developer-provided demonstration as an optional starting route.
+For each adopted mechanism, give its invalidation conditions and an example where aggressive reuse or compression would miss a problem.
+Keep distinct:
+- Fewer tokens.
+- Lower inference spending.
+- Lower latency.
+- Fewer browser actions.
+Prompt caching or a cheaper model does not automatically reduce total tokens. Extra parallel agents do not automatically improve efficiency.
+Ephemeral element references must not be blindly reused across changed observations. Adaptive recovery must not silently turn a regression into a passing test by changing the required behavior.
+Recommend the smallest set of efficiency mechanisms that can be implemented and evaluated in the hackathon.
+Support extensibility, but do not claim one policy optimizes every testing problem.
+Distinguish:
+- Short-route discovery.
+- Broad bug discovery and input exploration.
+- Mechanically testable accessibility constraints.
+- Performance measurement.
+- Competitor task comparison.
+Explain how goal-directed pruning may be inappropriate for broad bug discovery. Keep observed agent behavior separate from claims about real people or demographic groups.
+For competitor comparison, require equivalent tasks and starting conditions. Separate shortest verified route, actual exploratory route, and task completion. Do not infer missing features solely from failure to discover them. Exclude agent inference time from application-performance measurements.
+Show what graph observations can be reused between objectives and what conclusions must be recomputed.
+Specify:
+- How a worker reaches a frontier and the cost of doing so.
+- What a checkpoint actually restores.
+- What cannot be restored by browser cookies or local storage.
+- Whether resets or isolated test accounts are required.
+- How to verify a route from its stated initial conditions.
+- Handling of asynchronous updates and stale observations.
+- Application-version changes and invalidation.
+- Task completion and evidence persistence.
+- Action scope and validation of model-generated actions.
+Do not assume the ability to clone arbitrary server-side state. Give a fallback when exact restoration is unavailable.
+Prefer a correct single-worker algorithm first, with a clean extension to multiple workers.
+Define:
+- Frontier ownership and duplicate suppression.
+- Task leases and recovery after worker failure.
+- Observation and graph update consistency.
+- Handling conflicting or late results.
+- Isolation of accounts and mutable server data.
+- Shared versus worker-specific evidence.
+- Model-request scheduling and total usage accounting.
+Explain which multi-agent benefits are plausible and which require measurements. Do not assume extra workers give linear speedup.
+Provide minimal typed records or equivalent schemas for:
+- Task specification.
+- Observation and state context.
+- Abstract state and transition.
+- Frontier or investigation candidate.
+- Verification result and route witness.
+- Cost/usage record.
+- Evidence reference.
+- Decision and its justification.
+- Persisted run checkpoint.
+Provide an event contract suitable for an independently developed dashboard, including events equivalent to:
+- state_discovered
+- transition_observed
+- candidate_selected
+- branch_deferred
+- branch_pruned
+- branch_reactivated
+- state_refined
+- route_verified
+- finding_recorded
+- usage_updated
+- task_finished
+Use identifiers, timestamps, task and worker IDs, versions, and evidence references where necessary. Define which events are derived or aggregated.
+A pruning event should identify the excluded object, reason, scope, and assumptions or bound. A heuristic deferral must not masquerade as a proof.
+The graph may group states for display, but displayed counts must remain traceable to actual records. Do not fabricate token savings, observations, or successful executions for animation.
+Design a small reproducible benchmark and a fair comparison.
+Include a competent baseline, not only a deliberately wasteful agent. Suggested comparisons:
+- Ordinary model-driven browser execution.
+- The same execution with basic memory and cached navigation.
+- The proposed graph-selection policy.
+Keep model, tasks, starting conditions, allowed actions, and evaluation criteria comparable. Report cold-start and warm-cache behavior separately. Include reconnaissance, setup, reset, preprocessing, failed attempts, and verification costs. Give equivalent developer hints to all compared methods.
+Measure as applicable:
+- Verified completion and route cost.
+- Time and total model usage.
+- Browser actions and redundant investigations.
+- Replay reliability.
+- Reported-failure precision.
+- Seeded-failure recall when ground truth is available.
+- Incorrect state merges.
+- Cost of revalidation after application changes.
+Use repeated runs and held-out tasks when practical. A pilot supports a bounded claim, not universal superiority. Any statistical confidence statement needs a valid procedure, including consideration of adaptive stopping or selection if relevant.
+Include concrete counterexamples:
+1. Identical DOM with different cart, role, or authentication state.
+2. A seemingly irrelevant branch that hides a shorter route.
+3. Browser state restored while server state differs.
+4. A delayed update that invalidates a transient success.
+5. A modal that blocks a cached sequence.
+6. A zero-cost cycle or repeated form/input family.
+7. Two workers mutating the same account.
+8. A changed page with stale selectors or element references.
+9. A short route that violates prerequisites or allowed actions.
+10. A displayed graph path whose transitions cannot be composed.
+11. Compression omitting the control required for success.
+12. A repaired test that silently bypasses the original requirement.
+Propose executable invariant checks or property-based tests for the algorithmic core. Focus on meaningful properties, not tests that merely mirror implementation details.
+Return:
+1. A direct assessment of weaknesses, contradictions, and missing assumptions in this brief.
+2. A chosen MVP algorithm, explained in plain language before detailed notation.
+3. A precise mathematical formulation and explicit analysis regime.
+4. Data structures, function interfaces, and end-to-end pseudocode.
+5. Established properties, proof sketches where justified, and counterexamples limiting each claim.
+6. A separately labeled proposed research extension. Explain what might be new and what is already established.
+7. A token-efficiency design with failure and invalidation conditions.
+8. A small benchmark, competent baselines, ablations, and reporting format.
+9. Cumulative implementation milestones with working checkpoints and a fallback if a component fails.
+10. The UI event contract.
+11. Verified primary references if browsing is available.
+Keep the MVP small enough to implement as one workstream within the hackathon. Include one baseline policy with the same interface so the UI and evaluation workstreams can start independently.
+Do not require a major model-training effort, exhaustive crawling, a perfect world model, generic server snapshots, or uncalibrated probabilities pretending to be guarantees.
+If the best design uses mostly established algorithms, say so. A reliable implementation and measured benefit are sufficient for the event. If a stronger claim is not justified, weaken the claim instead of inventing a proof.
+Proceed with explicit reasonable assumptions rather than blocking on minor clarification.
+These are relevant precedents and implementation references, not evidence that my proposed combination is novel:
+- Dellin and Srinivasa, LazySP: [https://www.ri.cmu.edu/pub_files/2016/3/paper-lazysp.pdf](https://www.ri.cmu.edu/pub_files/2016/3/paper-lazysp.pdf)
+- ScreenSearch: [https://www.microsoft.com/en-us/research/publication/screensearch-uncertainty-aware-os-exploration/](https://www.microsoft.com/en-us/research/publication/screensearch-uncertainty-aware-os-exploration/)
+- GraphDroid: [https://arxiv.org/abs/2609.10031](https://arxiv.org/abs/2609.10031)
+- Signal-Driven Observation: [https://arxiv.org/abs/2606.06708](https://arxiv.org/abs/2606.06708)
+- Playwright authentication and server-state isolation: [https://playwright.dev/docs/auth](https://playwright.dev/docs/auth)
+- Playwright ARIA snapshots: [https://playwright.dev/docs/aria-snapshots](https://playwright.dev/docs/aria-snapshots)
+Verify actual claims and applicability. If you cannot browse, identify the related-work review as incomplete. Do not fabricate citations or claim exhaustive novelty checking.

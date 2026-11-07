@@ -10,10 +10,20 @@ _STOP = {
 }
 
 
+def _same(word: str, task_words: set[str]) -> bool:
+    for other in task_words:
+        if word == other:
+            return True
+        short, long = (word, other) if len(word) <= len(other) else (other, word)
+        if len(short) >= 3 and long.startswith(short):
+            return True
+    return False
+
+
 def relevance(name: str, text: str) -> int:
     words = {word for word in re.findall(r"[a-z0-9]+", name.lower()) if word not in _STOP and len(word) > 2}
     task_words = {word for word in re.findall(r"[a-z0-9]+", text.lower()) if word not in _STOP and len(word) > 2}
-    if words and words & task_words:
+    if words and any(_same(word, task_words) for word in words):
         return 0
     return 1
 

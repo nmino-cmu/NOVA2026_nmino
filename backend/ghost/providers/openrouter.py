@@ -103,7 +103,7 @@ def _schema(name: str) -> dict:
     }
 
 
-def _call(model: str, messages: list[dict], schema_name: str | None) -> dict:
+def _call(model: str, messages: list[dict], schema_name: str | None, max_tokens: int = 768, timeout: float = 45) -> dict:
     extra = {}
     if schema_name:
         extra["response_format"] = {
@@ -115,10 +115,10 @@ def _call(model: str, messages: list[dict], schema_name: str | None) -> dict:
             },
         }
     try:
-        return openrouter.chat_completion(model=model, messages=messages, max_tokens=768, timeout=45, **extra)
+        return openrouter.chat_completion(model=model, messages=messages, max_tokens=max_tokens, timeout=timeout, **extra)
     except RuntimeError as exc:
         if schema_name and ("response_format" in str(exc) or "json_schema" in str(exc)):
-            return openrouter.chat_completion(model=model, messages=messages, max_tokens=768, timeout=45)
+            return openrouter.chat_completion(model=model, messages=messages, max_tokens=max_tokens, timeout=timeout)
         raise
 
 
@@ -173,6 +173,95 @@ async def complete_json(
         data, problem = await once(settings.fallback_model, True, 2)
     else:
         data, problem = await once(settings.model, False, 2)
+    if data is not None:
+        return Completion(True, data, attempts, None)
+    return Completion(False, None, attempts, problem or "model_failed")
+
+
+def _strip_fence(content: str) -> str:
+    text = content.strip()
+    if not text.startswith("```"):
+        return text
+    lines = text.splitlines()
+    if lines and lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
+def _parse_document(content: str) -> tuple[dict | None, str | None]:
+    content = _strip_fence(content)
+    violation = find_violation(content)
+    if violation:
+        return None, violation
+    try:
+        data = json.loads(content)
+    except json.JSONDecodeError:
+        start, end = content.find("{"), content.rfind("}")
+        if start < 0 or end <= start:
+            return None, "malformed_json"
+        snippet = content[start : end + 1]
+        violation = find_violation(snippet)
+        if violation:
+            return None, violation
+        try:
+            data = json.loads(snippet)
+        except json.JSONDecodeError:
+            return None, "malformed_json"
+    if not isinstance(data, dict):
+        return None, "malformed_json"
+    found = find_violation(data)
+    if found:
+        return None, found
+    return data, None
+
+
+async def complete_document(
+    settings: Settings,
+    *,
+    purpose: str,
+    system: str,
+    user: str,
+    images: list[str] | None = None,
+    max_tokens: int = 1800,
+) -> Completion:
+    """Nested JSON for plans and reports. Images are evidence, not repository source."""
+    if purpose not in ALLOWED_PURPOSES:
+        raise ValueError(f"purpose {purpose} is not allowed")
+    openrouter.load_dotenv()
+    if images:
+        content: str | list = [{"type": "text", "text": user[:28000]}]
+        content.extend({"type": "image_url", "image_url": {"url": image}} for image in images[:4])
+    else:
+        content = user[:28000]
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": content},
+    ]
+    attempts: list[dict] = []
+
+    async def once(model: str, attempt: int) -> tuple[dict | None, str | None]:
+        try:
+            raw = await asyncio.to_thread(_call, model, messages, None, max_tokens, 90)
+        except Exception as exc:
+            attempts.append(_usage(None, model=model, purpose=purpose, attempt=attempt, error=redact(str(exc))))
+            return None, "transport"
+        text = _content(raw)
+        data, violation = _parse_document(text)
+        attempts.append(_usage(raw, model=model, purpose=purpose, attempt=attempt, error=violation))
+        if violation:
+            _quarantine(settings, purpose, text, violation)
+            return None, violation
+        if data is None:
+            return None, "malformed_json"
+        return data, None
+
+    data, problem = await once(settings.model, 1)
+    if data is not None:
+        return Completion(True, data, attempts, None)
+    fallback = settings.fallback_model if problem == "transport" and settings.fallback_model != settings.model else settings.model
+    data, problem = await once(fallback, 2)
     if data is not None:
         return Completion(True, data, attempts, None)
     return Completion(False, None, attempts, problem or "model_failed")

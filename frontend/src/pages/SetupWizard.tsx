@@ -31,7 +31,7 @@ export function SetupWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [targetKind, setTargetKind] = useState<"orbit" | "supplied" | null>(null);
+  const [targetKind, setTargetKind] = useState<"supplied" | null>(null);
   const [policyId, setPolicyId] = useState("adaptive-v1");
   const [url, setUrl] = useState("");
   const [targetName, setTargetName] = useState("");
@@ -43,21 +43,8 @@ export function SetupWizard() {
   const [task, setTask] = useState("");
   const [acceptableInteractions, setAcceptableInteractions] = useState(12);
   const [budget, setBudget] = useState<Budget>(DEFAULT_BUDGET);
-
-  async function loadOrbitPreset() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await createTaskDraft({ mode: "orbit" });
-      applyDraft(res);
-      setTargetKind("orbit");
-      setStep(1);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Preset failed");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [persona, setPersona] = useState("");
+  const [queries, setQueries] = useState("");
 
   function applyDraft(res: TaskDraftResponse) {
     setDraft(res);
@@ -112,12 +99,14 @@ export function SetupWizard() {
         acceptableInteractions,
         budget,
         url: targetKind === "supplied" ? url : draft?.url,
+        persona: persona || undefined,
+        queries: queries.split("\n").map((item) => item.trim()).filter(Boolean).slice(0, 3),
       };
       const created = await createTask(payload);
       const run = await createRun({
         taskId: created.id,
         taskVersion: created.version,
-        policyId: targetKind === "orbit" ? policyId : "ordinary-model-v1",
+        policyId: targetKind === "supplied" ? "ordinary-model-v1" : policyId,
         idempotencyKey: newIdempotencyKey(),
       });
       navigate(`/runs/${run.id}`);
@@ -129,7 +118,15 @@ export function SetupWizard() {
   }
 
   return (
-    <div className="setup-layout">
+    <div className="setup-page">
+      <header className="hero">
+        <div>
+          <div className="eyebrow">Browser investigations you can inspect and replay</div>
+          <h1>See your product through <span>new eyes.</span></h1>
+          <p>Enter the page you want investigated. The map records only states the run actually witnessed.</p>
+        </div>
+      </header>
+      <div className="setup-layout">
       <div>
       <h1 style={{ marginTop: 0 }}>New investigation</h1>
       <div className="wizard-steps" role="tablist" aria-label="Setup steps">
@@ -150,20 +147,7 @@ export function SetupWizard() {
       {step === 0 && (
         <section className="card">
           <h2 style={{ marginTop: 0, fontSize: "1.125rem" }}>{STEP_TITLES[0]}</h2>
-          <p style={{ color: "var(--secondary)" }}>
-            Choose a controlled demo or supply your own application URL.
-          </p>
-          <div className="wizard-actions">
-            <button type="button" className="btn btn-primary" disabled={loading} onClick={() => void loadOrbitPreset()}>
-              Use Orbit Supply preset
-            </button>
-          </div>
-          <p style={{ margin: "24px 0 8px", fontWeight: 500 }}>Controlled demo application</p>
-          <p style={{ color: "var(--secondary)", margin: "0 0 16px" }}>Orbit Supply</p>
-
-          <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "24px 0" }} />
-
-          <h3 style={{ fontSize: "1rem" }}>Supplied URL</h3>
+          <p style={{ color: "var(--secondary)" }}>Supply the application URL to investigate.</p>
           <div className="field">
             <label htmlFor="url">URL</label>
             <input id="url" value={url} onChange={(e) => setUrl(e.target.value)} />
@@ -217,6 +201,21 @@ export function SetupWizard() {
           <div className="field">
             <label htmlFor="task">Task description</label>
             <textarea id="task" value={task} onChange={(e) => setTask(e.target.value)} />
+          </div>
+          <div className="field">
+            <label htmlFor="persona">Persona</label>
+            <select id="persona" value={persona} onChange={(e) => setPersona(e.target.value)}>
+              <option value="">None</option>
+              <option value="price">Price</option>
+              <option value="browse">Browse</option>
+              <option value="search">Search</option>
+              <option value="careful">Careful</option>
+              <option value="hurried">Hurried</option>
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="queries">Search queries, one per line, up to three</label>
+            <textarea id="queries" value={queries} onChange={(e) => setQueries(e.target.value)} />
           </div>
           <div className="wizard-actions">
             <button type="button" className="btn" onClick={() => setStep(0)}>
@@ -287,7 +286,7 @@ export function SetupWizard() {
         <section className="card">
           <h2 style={{ marginTop: 0, fontSize: "1.125rem" }}>{STEP_TITLES[3]}</h2>
           <p style={{ color: "var(--secondary)" }}>
-            Target: {targetKind === "orbit" ? "Controlled demo application (Orbit Supply)" : url || "Supplied URL"}
+            Target: {url || "Supplied URL"}
           </p>
           <dl style={{ margin: 0 }}>
             <dt style={{ color: "var(--secondary)" }}>Objective</dt>
@@ -295,7 +294,7 @@ export function SetupWizard() {
             <dt style={{ color: "var(--secondary)" }}>Acceptable interactions</dt>
             <dd className="tabular">{acceptableInteractions}</dd>
           </dl>
-          {targetKind === "orbit" && (
+          {targetKind !== "supplied" && (
             <div className="field" style={{ marginTop: 16 }}>
               <label htmlFor="policy">Search</label>
               <select id="policy" value={policyId} onChange={(e) => setPolicyId(e.target.value)}>
@@ -319,12 +318,13 @@ export function SetupWizard() {
         <h2 style={{ marginTop: 0, fontSize: 18 }}>What this run checks</h2>
         <p style={{ color: "var(--secondary)" }}>{objective || "Choose a target to see the task."}</p>
         <ol>
-          <li>Logged out, empty cart, home visible</li>
-          <li>No order is placed</li>
-          <li>Checkout is enabled with exactly one Nova Mug</li>
+          {checks.length > 0 ? checks.map((item) => <li key={item.id}>{item.name}</li>) : (
+            <li>Checks appear after you describe the target and continue.</li>
+          )}
         </ol>
         <p className="tabular" style={{ color: "var(--secondary)" }}>Route budget {budget.routeActions} · {budget.requests} model requests</p>
       </aside>
+    </div>
     </div>
   );
 }

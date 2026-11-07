@@ -19,7 +19,8 @@ OpenRouter purposes: `task_draft`, `browser_plan`, `relevance`, `ui_review`, `re
 | `browser.reset.v1` | Fresh browser context |
 | `browser.start.v1` | URL contains `urlIncludes` and `absentNames` are not visible |
 | `browser.invariant.v1` | Page origin is allowed |
-| `visible_milestone.v1` | URL contains `urlIncludes`, each target role/name is visible, no visible alert |
+| `visible_milestone.v1` | URL contains `urlIncludes`, each declared target role/name is visible, and any `cartIncludes` text is present. An empty target list fails. |
+| `shop.cart.v1` | Cart text contains each required cheaper item, excludes the named higher-priced alternatives, and the price ceiling is at or below `maxPrice`. A heading alone does not pass. |
 
 `orbit.checkout.v1` reads server state through the controller. A success-looking screenshot cannot pass it. Behavioral check args do not hardcode the buggy build. The run records the selected build separately.
 
@@ -35,9 +36,9 @@ Terminal checks wait up to 3 seconds for `[data-ready=true]`, then sample every 
 
 `POST /api/tasks` stores that draft. The server, not the client, attaches evaluator ids.
 
-`POST /api/runs` body: `{"taskId","taskVersion","policyId","idempotencyKey"}`. Policy ids: `ordinary-model-v1`, `regression.ordinary.v1`, `regression.shortcut.v1`, `regression.express.v1`.
+`POST /api/runs` body: `{"taskId","taskVersion","policyId","idempotencyKey"}`. Policy ids: `ordinary-model-v1`, `regression.ordinary.v1`, `regression.shortcut.v1`.
 
-`POST /api/fixture-checks` body: `{"kind":"ordinary"|"shortcut"|"express","idempotencyKey"}`. These are labeled fixture regression checks, not discovered routes.
+`POST /api/fixture-checks` body: `{"kind":"ordinary"|"shortcut","idempotencyKey"}`. These are labeled fixture regression checks, not discovered routes.
 
 `GET /api/runs/{id}` returns the snapshot below. `GET /api/runs/{id}/events?after=` streams SSE. `?format=json` returns an array. `POST /api/runs/{id}/stop` requests a cooperative stop.
 

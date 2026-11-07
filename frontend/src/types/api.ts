@@ -18,7 +18,15 @@ export interface GraphNode {
   x: number;
   y: number;
   status: NodeStatus;
+  freshness?: "current" | "stale";
   seq: number;
+  url?: string;
+  screenshotId?: string | null;
+  outcome?: string;
+  action?: string;
+  reason?: string;
+  check?: string;
+  checkOk?: boolean;
 }
 
 export interface GraphEdge {
@@ -49,6 +57,9 @@ export interface ActivityEntry {
   seq: number;
   type: string;
   summary: string;
+  reason?: string;
+  outcome?: string;
+  url?: string;
 }
 
 export interface EvidenceEntry {
@@ -95,6 +106,24 @@ export interface Projection {
   evidence: EvidenceEntry[];
   limitations: string[];
   restoration: string;
+  identity?: {
+    goal?: string;
+    url?: string;
+    taskId?: string;
+    buildId?: string;
+    model?: string;
+    promptSet?: string;
+    policyId?: string;
+    persona?: string | null;
+    queries?: string[];
+  };
+  routes?: {
+    best?: { interactions?: number; status?: string; detail?: string; stale?: boolean } | null;
+    failed?: Array<{ verificationId?: string; interactions?: number; detail?: string; actions?: Array<{ name?: string; kind?: string; interactions?: number }> }>;
+    historical?: Array<{ verificationId?: string; buildId?: string; interactions?: number; detail?: string }>;
+    candidates?: Array<{ routeId?: string; status?: string; interactions?: number }>;
+  };
+  attempt?: Array<{ index: number; kind?: string; name?: string; interactions?: number; status?: string; stale?: boolean }>;
 }
 
 export interface TaskInfo {
@@ -160,6 +189,12 @@ export interface TaskDraftOrbit {
   mode: "orbit";
 }
 
+export interface TaskDraftShop {
+  mode: "shop";
+  persona?: string;
+  queries?: string[];
+}
+
 export interface TaskDraftSupplied {
   mode: "supplied";
   url: string;
@@ -168,7 +203,7 @@ export interface TaskDraftSupplied {
   restoration: "fresh_context" | "unknown";
 }
 
-export type TaskDraftBody = TaskDraftOrbit | TaskDraftSupplied;
+export type TaskDraftBody = TaskDraftOrbit | TaskDraftSupplied | TaskDraftShop;
 
 export interface TaskDraftResponse {
   checks?: CheckEntry[];
@@ -197,7 +232,7 @@ export interface CreateRunResponse {
 }
 
 export interface FixtureCheckBody {
-  kind: "ordinary" | "shortcut" | "express";
+  kind: "ordinary" | "shortcut";
   idempotencyKey: string;
 }
 

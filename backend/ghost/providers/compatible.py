@@ -30,7 +30,7 @@ async def complete(base_url: str, model: str, openrouter_key: str) -> dict:
     if key:
         headers["Authorization"] = f"Bearer {key}"
     payload = {
-        "model": model or "echo-local",
+        "model": model,
         "messages": [
             {"role": "system", "content": "Return JSON only. Do not write code."},
             {"role": "user", "content": '{"word":"ok"}'},
@@ -55,12 +55,14 @@ async def complete(base_url: str, model: str, openrouter_key: str) -> dict:
     return {"ok": True, "modelObserved": observed, "models": models, "usage": body.get("usage")}
 
 
-async def choose(base_url: str, user: str) -> dict:
+async def choose(base_url: str, user: str, model: str) -> dict:
     """Ask a loopback compatible endpoint to pick a candidate. No product key is attached."""
     parts = urlsplit(base_url)
     if parts.scheme not in {"http", "https"} or parts.hostname not in {"127.0.0.1", "localhost"}:
         return {"ok": False, "detail": "A custom investigation endpoint has to be on this machine."}
-    payload = {"model": "echo-local", "messages": [{"role": "user", "content": user}]}
+    if not model:
+        return {"ok": False, "detail": "Name the model."}
+    payload = {"model": model, "messages": [{"role": "user", "content": user}]}
     try:
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.post(base_url.rstrip("/") + "/chat/completions", json=payload)

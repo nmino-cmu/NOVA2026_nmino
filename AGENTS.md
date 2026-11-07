@@ -8,5 +8,7 @@ source. Read `release-index.json` only for labels and status.
 OpenRouter is product reasoning only. Do not send it repository source or ask
 it to write code.
 
-Search live roots with `scripts/live-search`. The current implementation target
-is R01. Later stages stay out of the released navigation until their gate passes.
+Search live roots with `scripts/live-search`. The active request authorizes the
+remaining R01–R08 scope. Unfinished capabilities stay out of released navigation
+until their own acceptance gate passes. `GU-R01-20261107-r4` remains the frozen
+package until a later package is validated.

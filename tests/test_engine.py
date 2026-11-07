@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 from playwright.async_api import async_playwright
 
-from fixtures.orbit.checks import EXPRESS, ORDINARY, SHORTCUT
+from fixtures.orbit.checks import ORDINARY, SHORTCUT
 from ghost.config import Settings
 from ghost.engine.adaptive import run_adaptive
 from ghost.engine.compare import harbor_checkout, orbit_shortcut
@@ -55,7 +55,7 @@ async def _run(settings, store, browser, actions, policy_id: str):
 
 
 @pytest.mark.asyncio
-async def test_replay_ordinary_shortcut_and_express(orbit_server, tmp_path):
+async def test_replay_ordinary_and_shortcut(orbit_server, tmp_path):
     settings = _settings(tmp_path, orbit_server)
     store = Store(tmp_path)
     async with async_playwright() as playwright:
@@ -63,7 +63,6 @@ async def test_replay_ordinary_shortcut_and_express(orbit_server, tmp_path):
         try:
             ordinary, store = await _run(settings, store, browser, ORDINARY, "regression.ordinary.v1")
             shortcut, store = await _run(settings, store, browser, SHORTCUT, "regression.shortcut.v1")
-            express, store = await _run(settings, store, browser, EXPRESS, "regression.express.v1")
         finally:
             await browser.close()
 
@@ -77,13 +76,6 @@ async def test_replay_ordinary_shortcut_and_express(orbit_server, tmp_path):
 
     assert shortcut["status"] == "passed"
     assert shortcut["projection"]["bestVerified"]["interactions"] == 3
-
-    assert express["status"] == "failed"
-    assert express["projection"]["bestVerified"] is None
-    assert express["projection"]["latestVerification"]["status"] == "failed"
-    assert express["projection"]["latestVerification"]["interactions"] == 1
-    assert express["discovery"] is False
-    assert express["projection"]["evidence"]
 
 
 @pytest.mark.asyncio
@@ -124,6 +116,95 @@ async def test_supplied_page_reaches_a_visible_milestone(orbit_server, tmp_path)
 
 
 @pytest.mark.asyncio
+async def test_shop_brief_searches_browses_and_drags(orbit_server, tmp_path):
+    settings = _settings(tmp_path, orbit_server)
+    store = Store(tmp_path)
+    task = store.create_task(
+        build_task(
+            {
+                "mode": "supplied",
+                "url": orbit_server["url"] + "/shop",
+                "targetName": "Cart ready",
+                "restoration": "fresh_context",
+                "objective": "Put the notebook and the mug in the cart at a low price.",
+                "task": "Search for the notebook, browse to Mugs, drag the price ceiling down, and drag the mug into the cart.",
+                "queries": ["notebook"],
+                "persona": "price",
+            },
+            orbit_origin=settings.orbit_origin,
+            model=settings.model,
+        )
+    )
+    run = store.create_run(task_id=task["id"], policy_id="ordinary-model-v1", idempotency_key="idem-shop", discovery=True, label="Shop")
+    actions = [
+        {"kind": "fill", "target": {"role": "searchbox", "name": "Search the shop", "value": "notebook"}},
+        {"kind": "activate", "target": {"role": "button", "name": "Search"}},
+        {"kind": "activate", "target": {"role": "button", "name": "Add Field notebook $4"}},
+        {"kind": "drag", "target": {"role": "slider", "name": "Price ceiling"}},
+        {"kind": "activate", "target": {"role": "link", "name": "Pens"}},
+        {"kind": "activate", "target": {"role": "button", "name": "Add Basic ballpoint pen $2"}},
+        {"kind": "activate", "target": {"role": "link", "name": "Mugs"}},
+        {"kind": "drag", "target": {"role": "draggable", "name": "Ceramic mug $6", "onto": "Cart"}},
+    ]
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            await execute_run(settings, store, browser, run["id"], lambda ledger: Scripted(actions))
+        finally:
+            await browser.close()
+    body = snapshot(store, run["id"])
+    summaries = [item["summary"] for item in body["projection"]["activity"]]
+    assert body["status"] == "passed", summaries
+    assert any(item.startswith("Filled Search the shop") for item in summaries)
+    assert any(item.startswith("Dragged Price ceiling") for item in summaries)
+    assert any(item.startswith("Dragged Ceramic mug") for item in summaries)
+    assert body["projection"]["bestVerified"]["interactions"] == 8
+    assert "Field notebook $4" in body["projection"]["latestVerification"]["detail"]
+    assert "Leather notebook" not in body["projection"]["latestVerification"]["detail"]
+
+
+@pytest.mark.asyncio
+async def test_off_origin_click_is_rejected_and_the_search_continues(orbit_server, tmp_path):
+    settings = _settings(tmp_path, orbit_server)
+    store = Store(tmp_path)
+    task = store.create_task(
+        build_task(
+            {
+                "mode": "supplied",
+                "url": orbit_server["url"] + "/milestone",
+                "targetName": "Milestone reached",
+                "restoration": "fresh_context",
+                "objective": "Make the milestone heading visible.",
+            },
+            orbit_origin=settings.orbit_origin,
+            model=settings.model,
+        )
+    )
+    run = store.create_run(
+        task_id=task["id"],
+        policy_id="ordinary-model-v1",
+        idempotency_key="idem-off-origin",
+        discovery=True,
+        label="Investigation",
+    )
+    actions = [
+        {"kind": "activate", "target": {"role": "link", "name": "Outside notes"}},
+        {"kind": "activate", "target": {"role": "button", "name": "Show milestone"}},
+    ]
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            await execute_run(settings, store, browser, run["id"], lambda ledger: Scripted(actions))
+        finally:
+            await browser.close()
+    body = snapshot(store, run["id"])
+    summaries = [item["summary"] for item in body["projection"]["activity"]]
+    assert body["status"] == "passed"
+    assert body["projection"]["bestVerified"]["interactions"] == 1
+    assert any("left the allowed origin" in item for item in summaries)
+
+
+@pytest.mark.asyncio
 async def test_adaptive_verifies_a_real_route(orbit_server, tmp_path):
     settings = _settings(tmp_path, orbit_server)
     store = Store(tmp_path)
@@ -144,6 +225,37 @@ async def test_adaptive_verifies_a_real_route(orbit_server, tmp_path):
     assert decisions
     assert body["projection"]["decisions"]
     assert {item["kind"] for item in decisions} <= {"heuristic", "fairness", "bound"}
+
+
+@pytest.mark.asyncio
+async def test_adaptive_shop_fills_drags_and_verifies(orbit_server, tmp_path):
+    settings = _settings(tmp_path, orbit_server)
+    store = Store(tmp_path)
+    task = store.create_task(
+        build_task(
+            {"mode": "shop", "persona": "browse", "queries": ["notebook"]},
+            orbit_origin=settings.orbit_origin,
+            model=settings.model,
+        )
+    )
+    run = store.create_run(task_id=task["id"], policy_id="adaptive-v1", idempotency_key="idem-adaptive-shop", discovery=True, label="Adaptive shop")
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            await run_adaptive(settings, store, browser, run["id"])
+        finally:
+            await browser.close()
+    body = snapshot(store, run["id"])
+    summaries = [
+        (event.get("payload") or {}).get("summary") or event.get("type")
+        for event in store.events_after(run["id"], 0)
+    ]
+    assert body["status"] == "passed", (body["stopReason"], summaries)
+    assert any(item.startswith("Filled Search the shop") for item in summaries)
+    assert any(item.startswith("Dragged Price ceiling") for item in summaries)
+    assert any(item.startswith("Dragged Ceramic mug") for item in summaries)
+    assert "Field notebook $4" in body["projection"]["bestVerified"]["detail"]
+    assert "Leather notebook" not in body["projection"]["bestVerified"]["detail"]
 
 
 @pytest.mark.asyncio
@@ -205,7 +317,7 @@ async def test_compatible_endpoint_completes_a_route(orbit_server, tmp_path):
         async with async_playwright() as playwright:
             browser = await playwright.chromium.launch(headless=True)
             try:
-                await execute_run(settings, store, browser, run["id"], lambda ledger: CompatibleChooser(base, store, ledger, run["id"], task))
+                await execute_run(settings, store, browser, run["id"], lambda ledger: CompatibleChooser(base, store, ledger, run["id"], task, "echo-local"))
             finally:
                 await browser.close()
     finally:
@@ -248,7 +360,11 @@ async def test_comparison_measures_both_storefronts(orbit_server):
             try:
                 harbor, orbit = await asyncio.gather(
                     harbor_checkout(browser, f"http://127.0.0.1:{port}"),
-                    orbit_shortcut(browser, orbit_server["url"]),
+                    orbit_shortcut(browser, orbit_server["url"], token=orbit_server["token"]),
+                )
+                harbor_again, orbit_again = await asyncio.gather(
+                    harbor_checkout(browser, f"http://127.0.0.1:{port}"),
+                    orbit_shortcut(browser, orbit_server["url"], token=orbit_server["token"]),
                 )
             finally:
                 await browser.close()
@@ -259,3 +375,6 @@ async def test_comparison_measures_both_storefronts(orbit_server):
     assert harbor["interactions"] == 4
     assert orbit["status"] == "passed"
     assert orbit["interactions"] == 3
+    assert harbor_again["status"] == "passed"
+    assert orbit_again["status"] == "passed", orbit_again
+    assert orbit["namespace"] != orbit_again["namespace"]

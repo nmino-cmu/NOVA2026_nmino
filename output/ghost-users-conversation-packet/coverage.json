@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-11-07T16:43:18-05:00",
+  "scope": "Ghost Users and connected NOVA2026 planning, design, algorithm, implementation and audits",
+  "listing_counts": {
+    "active_codex": 90,
+    "archived_codex": 18,
+    "active_chatgpt": 469,
+    "archived_chatgpt": 0
+  },
+  "listing_pagination_exhausted": true,
+  "source_conversations": 12,
+  "user_messages": 46,
+  "assistant_messages": 77,
+  "truncated_messages": [
+    "C11.T01.M02"
+  ],
+  "limits": [
+    "Returned histories may omit earlier messages even though nextCursor is null.",
+    "C11 assistant response is explicitly truncated at 20000 characters.",
+    "No unseen historical content has been reconstructed.",
+    "Local status documents and prior audits are historical evidence; no fresh app acceptance test was performed."
+  ],
+  "exclusions": [
+    "Hidden reasoning",
+    "Tools and terminal output",
+    "System/developer instructions",
+    "Unrelated conversations",
+    "Frozen release contents",
+    "The packet-creation conversation itself"
+  ]
+}

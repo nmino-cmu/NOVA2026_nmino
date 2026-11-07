@@ -34,7 +34,7 @@ nav a, nav button, .action, button {
   min-height:44px; padding:0 16px; border-radius:10px; border:1px solid var(--line);
   background:#fffdf9; color:var(--ink); font:inherit; text-decoration:none;
   display:inline-flex; align-items:center; cursor:pointer; }
-button.express, a.primary { background:var(--accent); color:white; border-color:transparent; }
+a.primary { background:var(--accent); color:white; border-color:transparent; }
 button:disabled { opacity:.45; cursor:not-allowed; }
 main { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; }
 h1 { font-size:40px; line-height:1.1; margin:0 0 8px; }
@@ -50,13 +50,12 @@ input { display:block; margin-top:6px; min-height:40px; width:min(360px, 100%);
 
 _HOME_JS = """
 function shown(open) { return open ? "true" : "false"; }
-function wireHome(awaitsCommit) {
+function wireHome() {
   const more = document.getElementById("more");
   const morePanel = document.getElementById("more-panel");
   const quick = document.getElementById("quick");
   const quickPanel = document.getElementById("quick-panel");
   const quickMug = document.getElementById("quick-mug");
-  const express = document.getElementById("express");
   more.addEventListener("click", () => {
     const opening = morePanel.hasAttribute("hidden");
     if (opening) morePanel.removeAttribute("hidden");
@@ -86,44 +85,7 @@ function wireHome(awaitsCommit) {
       box.hidden = false;
     }
   });
-  express.addEventListener("click", async () => {
-    if (awaitsCommit) {
-      document.documentElement.dataset.busy = "1";
-      express.disabled = true;
-      const res = await fetch("/api/cart/items", {
-        method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({sku: "nova-mug", qty: 1})
-      });
-      if (!res.ok) { document.documentElement.dataset.busy = "0"; return; }
-      location.assign("/checkout");
-      return;
-    }
-    const timer = setTimeout(() => {
-      fetch("/api/cart/items", {
-        method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({sku: "nova-mug", qty: 1})
-      });
-    }, 5000);
-    window.addEventListener("pagehide", () => clearTimeout(timer), {once: true});
-    location.assign("/checkout?optimistic=1");
-  });
 }
-"""
-
-_CHECKOUT_JS = """
-setTimeout(async () => {
-  const cart = await fetch("/api/cart").then((r) => r.json());
-  const count = (cart.items || []).reduce((n, item) => n + item.qty, 0);
-  const label = document.getElementById("cart-label");
-  if (label) label.textContent = count ? count + " in cart" : "Empty cart";
-  const ok = (cart.items || []).length === 1 && cart.items[0].sku === "nova-mug" && cart.items[0].qty === 1;
-  if (!ok) {
-    document.getElementById("ready-note").hidden = true;
-    document.getElementById("express-error").hidden = false;
-    const button = document.querySelector("#checkout-form button");
-    if (button) button.disabled = true;
-  }
-}, 900);
 """
 
 
@@ -330,12 +292,10 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request):
         state = read_state(ns_of(request))
-        awaits = "true" if identity["build"] == "orbit-fixed-v1" else "false"
         body = """
 <nav aria-label="Shop">
   <a href="/catalog">Catalog</a>
   <button type="button" id="more" aria-expanded="false" aria-controls="more-panel">More</button>
-  <button type="button" id="express" class="express">Express Nova Mug</button>
 </nav>
 <div id="more-panel" hidden>
   <button type="button" id="quick" aria-expanded="false" aria-controls="quick-panel">Quick order</button>
@@ -348,7 +308,7 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
   <h1>Orbit Supply</h1>
   <p>Desk goods for late launches. Start from the catalog, or use the menu.</p>
 </main>"""
-        return layout("Orbit Supply", body, state, script=_HOME_JS + f"\nwireHome({awaits});\n")
+        return layout("Orbit Supply", body, state, script=_HOME_JS + "\nwireHome();\n")
 
     @app.get("/catalog", response_class=HTMLResponse)
     def catalog(request: Request):
@@ -425,10 +385,8 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
     @app.get("/checkout", response_class=HTMLResponse)
     def checkout(request: Request):
         state = read_state(ns_of(request))
-        optimistic = request.query_params.get("optimistic") == "1"
         real = state["cart"] == [{"sku": SKU, "qty": 1}]
-        show_ready = optimistic or real
-        if show_ready:
+        if real:
             form = """
 <p id="ready-note" role="status">Checkout ready</p>
 <p>Nova Mug × 1</p>
@@ -436,8 +394,7 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
   <label>Name <input name="name" autocomplete="name"></label>
   <label>Email <input name="email" type="email" autocomplete="email"></label>
   <button type="submit">Place order</button>
-</form>
-<p id="express-error" role="alert" hidden>The Express cart update did not complete. Your cart is empty.</p>"""
+</form>"""
         else:
             form = """
 <p role="alert">Your cart is empty.</p>
@@ -445,9 +402,8 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
   <button type="submit" disabled>Place order</button>
 </form>
 <p><a href="/catalog">Catalog</a></p>"""
-        script = _CHECKOUT_JS if optimistic else ""
         body = f'<nav aria-label="Shop"><a href="/catalog">Catalog</a></nav><main><h1>Checkout</h1>{form}</main>'
-        return layout("Checkout", body, state, script=script, fake_cart=optimistic)
+        return layout("Checkout", body, state)
 
     @app.post("/checkout/place")
     async def place(request: Request):
@@ -471,12 +427,101 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
             read_state(ns),
         )
 
+    @app.get("/shop", response_class=HTMLResponse)
+    def shop():
+        body = """
+<main>
+  <h1>Field shop</h1>
+  <p>Controlled demo application. Do not sign in. Do not place an order.</p>
+  <label>Search the shop <input type="search" aria-label="Search the shop" id="q"></label>
+  <button type="button" id="go">Search</button>
+  <p>Departments: <a href="#pens" id="pens">Pens</a> · <a href="#mugs" id="mugs">Mugs</a></p>
+  <label>Price ceiling <input type="range" min="0" max="100" value="80" aria-label="Price ceiling" id="price"></label>
+  <p id="price-read">Ceiling 80</p>
+  <div id="results"></div>
+  <div id="drop" data-drop="1" role="region" aria-label="Cart">Cart</div>
+  <p id="bag">In the cart:</p>
+  <h2 id="done" hidden>Cart ready</h2>
+</main>"""
+        script = """
+const items = new Set();
+const price = document.getElementById("price");
+const done = document.getElementById("done");
+const cheap = ["Field notebook $4", "Basic ballpoint pen $2", "Ceramic mug $6"];
+const pricey = ["Leather notebook $18", "Gel pen $9", "Travel mug $22"];
+function render() {
+  document.getElementById("price-read").textContent = "Ceiling " + price.value;
+  const names = [...items];
+  document.getElementById("bag").textContent = names.length ? "In the cart: " + names.join(", ") : "In the cart:";
+  const ready = cheap.every((name) => items.has(name)) && pricey.every((name) => !items.has(name)) && Number(price.value) <= 40;
+  done.hidden = !ready;
+}
+function addButton(label) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = label;
+  button.addEventListener("click", () => { items.add(label.replace(/^Add /, "")); render(); });
+  return button;
+}
+function addMug(label) {
+  const item = document.createElement("div");
+  item.draggable = true;
+  item.setAttribute("aria-label", label);
+  item.textContent = label;
+  return item;
+}
+price.addEventListener("input", render);
+document.getElementById("go").addEventListener("click", () => {
+  const box = document.getElementById("results");
+  box.textContent = "";
+  if (document.getElementById("q").value.toLowerCase().includes("notebook")) {
+    box.appendChild(addButton("Add Field notebook $4"));
+    box.appendChild(addButton("Add Leather notebook $18"));
+  }
+});
+document.getElementById("pens").addEventListener("click", (event) => {
+  event.preventDefault();
+  const box = document.getElementById("results");
+  if (box.querySelector("[data-pen]")) return;
+  const cheapPen = addButton("Add Basic ballpoint pen $2");
+  cheapPen.setAttribute("data-pen", "1");
+  box.appendChild(cheapPen);
+  box.appendChild(addButton("Add Gel pen $9"));
+});
+document.getElementById("mugs").addEventListener("click", (event) => {
+  event.preventDefault();
+  const box = document.getElementById("results");
+  if (box.querySelector("[data-mug]")) return;
+  const mug = addMug("Ceramic mug $6");
+  mug.setAttribute("data-mug", "1");
+  box.appendChild(mug);
+  box.appendChild(addMug("Travel mug $22"));
+});
+let dragging = "";
+document.getElementById("results").addEventListener("dragstart", (event) => {
+  dragging = (event.target.getAttribute("aria-label") || event.target.textContent || "").trim();
+  if (event.dataTransfer) event.dataTransfer.setData("text/plain", dragging);
+});
+const drop = document.getElementById("drop");
+drop.addEventListener("dragover", (event) => event.preventDefault());
+drop.addEventListener("drop", (event) => {
+  event.preventDefault();
+  const carried = dragging || ((event.dataTransfer && event.dataTransfer.getData("text/plain")) || "");
+  if (carried) items.add(carried.trim());
+  dragging = "";
+  render();
+});
+"""
+        empty = {"cart": [], "loggedIn": False, "orders": 0, "pending": [], "commitCount": 0}
+        return layout("Field shop", body, empty, script=script)
+
     @app.get("/milestone", response_class=HTMLResponse)
     def milestone():
         body = """
 <main>
   <h1>Field note</h1>
   <p>A separate local page with no cart.</p>
+  <a href="https://example.com/">Outside notes</a>
   <button type="button" id="show">Show milestone</button>
   <h2 id="reached" hidden>Milestone reached</h2>
 </main>

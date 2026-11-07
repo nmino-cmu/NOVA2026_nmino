@@ -1,0 +1,13 @@
+{
+  "pdf": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/output/pdf/Ghost_Users_NOVA_Conversation_Packet.pdf",
+  "pages": 180,
+  "conversation_count": 12,
+  "user_messages": 46,
+  "assistant_messages": 77,
+  "synthesis_words": 7720,
+  "total_readable_words": 49121,
+  "reference_documents": 15,
+  "historical_images": 2,
+  "pdf_bytes": 1169898,
+  "capture": "2026-11-07T16:43:18-05:00"
+}

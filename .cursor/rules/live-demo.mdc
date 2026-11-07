@@ -1,0 +1,15 @@
+---
+description: Publish the live Ghost Users demo to nickmino.com after product changes
+alwaysApply: true
+---
+
+# Live demo on nickmino.com
+
+https://nickmino.com/nova2026 (also /NOVA2026 and /Nova2026) is a live investigation. The visitor supplies any public http(s) link. It is not a recorded snapshot and it does not ship a canned shop.
+
+After you change Ghost Users behavior, the interface, or the API the demo uses:
+
+1. From this repo, run `python3 scripts/publish_live_demo.py`
+2. In `/Users/nicholasmino/ProgrammingFiles/Personal_Website`, commit `public/nova2026` and push `main`.
+
+Do not publish `.data`, recorded conversations, or fixture snapshots into the website. Do not bake a conversation id or a shop preset into the demo build. The demo process uses `GHOST_PUBLIC_DEMO=1` and `.data-live-demo`, separate from local investigations on port 8787.

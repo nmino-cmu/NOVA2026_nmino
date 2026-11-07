@@ -1,0 +1,18 @@
+{
+  "pages": 180,
+  "message_entries": 123,
+  "missing_message_labels": [],
+  "image_pages": [
+    161,
+    163
+  ],
+  "outlines": 28,
+  "truncation_notice_present": true,
+  "historical_markers_remaining": false,
+  "text_outside_side_margins": [],
+  "archive_files": 49,
+  "archive_integrity_error": null,
+  "visual_review": "All 180 rendered pages reviewed in contact sheets; cover, source tables, transcript boundaries, historical images, and final pages also inspected individually.",
+  "pdf_sha256": "e1185a6682cce2c3d5c3472b5464ff47ad0fd774d68a4cac45f1f6548a4f5883",
+  "scope": "Document integrity and layout; not a new product audit or verification of historical external claims."
+}

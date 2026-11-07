@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { listRuns, newIdempotencyKey, postFixtureCheck } from "../api/client";
+import { Link } from "react-router-dom";
+import { listRuns } from "../api/client";
 import type { RunListItem } from "../types/api";
 
 export function RunLibrary() {
-  const navigate = useNavigate();
   const [runs, setRuns] = useState<RunListItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [fixtureMsg, setFixtureMsg] = useState<string | null>(null);
-  const [fixtureLoading, setFixtureLoading] = useState(false);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -17,23 +14,8 @@ export function RunLibrary() {
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load runs"));
   }, []);
 
-  async function runFixture(kind: "ordinary" | "shortcut" | "express") {
-    setFixtureLoading(true);
-    setFixtureMsg(null);
-    try {
-      const created = (await postFixtureCheck({ kind, idempotencyKey: newIdempotencyKey() })) as {
-        id: string;
-      };
-      navigate(`/runs/${created.id}`);
-    } catch (e) {
-      setFixtureMsg(e instanceof Error ? e.message : "Fixture check failed");
-    } finally {
-      setFixtureLoading(false);
-    }
-  }
-
   return (
-    <div>
+    <div className="library-page">
       <h1 style={{ marginTop: 0 }}>Run library</h1>
       {error && <div className="error-banner" role="alert">{error}</div>}
 
@@ -42,7 +24,7 @@ export function RunLibrary() {
       {runs && runs.length === 0 && (
         <div className="card library-empty">
           <p>No investigations yet.</p>
-          <Link to="/" className="btn btn-primary" style={{ display: "inline-flex", marginTop: 16 }}>
+          <Link to="/?new=1" className="btn btn-primary" style={{ display: "inline-flex", marginTop: 16 }}>
             Start a new investigation
           </Link>
         </div>
@@ -65,66 +47,11 @@ export function RunLibrary() {
                   {run.status ?? "unknown"} · {run.id}
                 </div>
               </Link>
+              <Link to={`/playback/${run.id}`}>Recorded playback</Link>
             </li>
           ))}
         </ul>
       )}
-
-      <section className="fixture-section card">
-        <h2 style={{ marginTop: 0, fontSize: "1rem" }}>Controlled fixture checks</h2>
-        <p>
-          These are fixture regression checks against the Orbit controller — not routes the investigator
-          discovered during a run.
-        </p>
-        <p style={{ fontStyle: "italic" }}>
-          Express is expected to fail the checkout check.
-        </p>
-        {fixtureMsg && <p role="status">{fixtureMsg}</p>}
-        <div className="fixture-buttons">
-          <button
-            type="button"
-            className="btn"
-            disabled={fixtureLoading}
-            onClick={() => void runFixture("ordinary")}
-          >
-            Ordinary
-          </button>
-          <button
-            type="button"
-            className="btn"
-            disabled={fixtureLoading}
-            onClick={() => void runFixture("shortcut")}
-          >
-            Shortcut
-          </button>
-          <button
-            type="button"
-            className="btn"
-            disabled={fixtureLoading}
-            onClick={() => void runFixture("express")}
-          >
-            Express
-          </button>
-          <button
-            type="button"
-            className="btn"
-            disabled={fixtureLoading}
-            onClick={() => {
-              setFixtureLoading(true);
-              void fetch("/api/keyboard-checks", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
-                .then(async (response) => {
-                  if (!response.ok) throw new Error(await response.text());
-                  return response.json();
-                })
-                .then((body) => navigate(`/runs/${body.id}`))
-                .catch((exc) => setFixtureMsg(exc instanceof Error ? exc.message : "Keyboard check failed"))
-                .finally(() => setFixtureLoading(false));
-            }}
-          >
-            Keyboard
-          </button>
-        </div>
-      </section>
     </div>
   );
 }

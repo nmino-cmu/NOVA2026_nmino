@@ -7,7 +7,7 @@ import json
 import time
 from pathlib import Path
 
-from ghost.engine.browser import activate, capture, open_context
+from ghost.engine.browser import capture, open_context, perform
 from ghost.engine.observer import observe
 from ghost.engine.restore import orbit_reset, orbit_state
 from ghost.hashing import action_sequence_hash
@@ -45,7 +45,7 @@ async def verify_route(
     route_id: str,
 ) -> dict:
     namespace = f"ns_{run_id}_verify"
-    context = await open_context(browser, url=task["url"], namespace=namespace, orbit_origin=settings.orbit_origin)
+    context = await open_context(browser, url=task["url"], namespace=namespace, orbit_origin=settings.orbit_origin, namespace_header=task.get("namespaceHeader"))
     page = await context.new_page()
     trace = settings.data_dir / "tmp" / f"{run_id}-verify.zip"
     trace.parent.mkdir(parents=True, exist_ok=True)
@@ -76,7 +76,7 @@ async def verify_route(
         replayed = []
         for action in actions:
             try:
-                await activate(page, action["target"])
+                await perform(page, action["target"], action.get("kind") or "activate")
             except Exception:
                 return _result(verification_id, route_id, replayed, prefix_ids, "failed", "A frozen target was missing, ambiguous, or blocked.", False, reset_id, initial_hash, action_sequence_hash(actions, _policy(task)))
             ledger.used_browser += 1
@@ -105,9 +105,9 @@ async def verify_route(
             invariants = [evaluate(ref["id"], ref.get("args") or {}, _ctx(task, fixture, page_facts, baseline_orders, namespace, expected_build)) for ref in task["invariants"]]
             samples.append(
                 {
-                    "ok": all(item["ok"] for item in goal + invariants),
+                    "ok": bool(goal) and all(item["ok"] for item in goal) and all(item["ok"] for item in invariants),
                     "errorVisible": page_facts.get("errorVisible"),
-                    "detail": (goal[0]["detail"] if goal else ""),
+                    "detail": (goal[0]["detail"] if goal else "No goal check was declared."),
                 }
             )
             if time.monotonic() - started >= 1.5:

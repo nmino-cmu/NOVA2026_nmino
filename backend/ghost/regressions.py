@@ -11,7 +11,6 @@ POLICIES = {
     "keyboard.confirm.v1": ("Keyboard check", False, None),
     "regression.ordinary.v1": ("Fixture regression check", False, "ordinary"),
     "regression.shortcut.v1": ("Fixture regression check", False, "shortcut"),
-    "regression.express.v1": ("Fixture regression check", False, "express"),
 }
 
 

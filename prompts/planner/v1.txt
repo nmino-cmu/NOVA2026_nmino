@@ -5,4 +5,8 @@ Explain the choice in a short rationale with no code, commands, selectors, or sc
 Do not invent controls.
 Follow the task constraints, including any instruction not to place an order.
 Prefer the listed action that moves toward the stated goal.
+A fill candidate types its shown value into that field. A drag candidate drags that control.
+When the task asks for search and for the non-search interface, do both before you finish.
+A persona profile, when present, is a preference among allowed candidates. Shared task constraints win when they conflict.
+Do not invent a different route to make personas look different. Choose from what is on the page.
 Return only the requested JSON object.

@@ -43,24 +43,62 @@ def _usage(rows: list[dict], elapsed_ms: int) -> dict:
     }
 
 
+def _current_pass(item: dict) -> bool:
+    return item.get("status") == "passed" and item.get("repaired") is False and not item.get("stale")
+
+
+def _route_view(item: dict) -> dict:
+    actions = []
+    for action in item.get("actions") or []:
+        target = action.get("target") or {}
+        actions.append(
+            {
+                "kind": action.get("kind"),
+                "name": target.get("name"),
+                "interactions": (action.get("cost") or {}).get("interactions", 1),
+            }
+        )
+    return {
+        "verificationId": item.get("id"),
+        "routeId": item.get("routeId"),
+        "status": item.get("status"),
+        "interactions": item.get("interactions"),
+        "stale": bool(item.get("stale")),
+        "detail": item.get("detail"),
+        "buildId": item.get("buildId"),
+        "actions": actions,
+    }
+
+
 def snapshot(store: Store, run_id: str) -> dict:
     run = store.get_run(run_id)
     task = store.get_task(run["taskId"])
     prefixes = store.records(run_id, "prefix")
     transitions = store.records(run_id, "transition")
     verifications = store.records(run_id, "verification")
-    passed_ids = set()
+    current_ids = set()
+    stale_ids = set()
     failed_ids = set()
     for item in verifications:
-        target = passed_ids if item.get("status") == "passed" else failed_ids if item.get("status") == "failed" else set()
-        target.update(item.get("prefixIds") or [])
+        ids = set(item.get("prefixIds") or [])
+        if _current_pass(item):
+            current_ids.update(ids)
+        elif item.get("status") == "passed" and item.get("stale"):
+            stale_ids.update(ids)
+        elif item.get("status") == "failed":
+            failed_ids.update(ids)
+            if item.get("stale"):
+                stale_ids.update(ids)
+    by_child = {item.get("childPrefixId"): item for item in transitions}
+    observations = store.records(run_id, "observation")
     nodes = []
     for item in prefixes:
         status = "witnessed"
-        if item["id"] in passed_ids:
+        if item["id"] in current_ids:
             status = "verified"
         elif item["id"] in failed_ids:
             status = "failed"
+        incoming = by_child.get(item["id"]) or {}
         nodes.append(
             {
                 "id": item["id"],
@@ -68,9 +106,27 @@ def snapshot(store: Store, run_id: str) -> dict:
                 "x": 48 + int(item.get("depth") or 0) * 196,
                 "y": 48 + int(item.get("lane") or 0) * 92,
                 "status": status,
+                "freshness": "stale" if item["id"] in stale_ids and item["id"] not in current_ids else "current",
                 "seq": item.get("seq") or 0,
+                "url": incoming.get("url") or "",
+                "screenshotId": incoming.get("screenshotId"),
+                "outcome": incoming.get("outcome") or "",
+                "action": incoming.get("name") or "",
+                "reason": incoming.get("reason") or "",
             }
         )
+    if nodes and observations:
+        if not nodes[0].get("url"):
+            nodes[0]["url"] = observations[0].get("url") or ""
+        if not nodes[0].get("screenshotId"):
+            nodes[0]["screenshotId"] = observations[0].get("screenshotId")
+            nodes[0]["outcome"] = nodes[0].get("outcome") or "start"
+    attempts = list(run.get("goalAttempts") or [])
+    for node in nodes:
+        hits = [item for item in attempts if item.get("url") and item.get("url") == node.get("url")]
+        if hits:
+            node["check"] = hits[-1].get("detail") or ""
+            node["checkOk"] = bool(hits[-1].get("ok"))
     if run["status"] in {"queued", "running"} and nodes:
         if nodes[-1]["status"] == "witnessed":
             nodes[-1]["status"] = "current"
@@ -84,9 +140,9 @@ def snapshot(store: Store, run_id: str) -> dict:
         for item in transitions
         if item.get("outcome") == "executed" and item.get("childPrefixId")
     ]
-    passed = [item for item in verifications if item.get("status") == "passed" and item.get("repaired") is False]
+    passed = [item for item in verifications if _current_pass(item)]
     best = min(passed, key=lambda item: item.get("interactions") or 0) if passed else None
-    witness_source = best or (verifications[-1] if verifications else None)
+    witness_source = best
     witness = []
     if witness_source:
         for index, action in enumerate(witness_source.get("actions") or [], start=1):
@@ -143,6 +199,7 @@ def snapshot(store: Store, run_id: str) -> dict:
                 "actionSequenceHash": best["actionSequenceHash"],
                 "resetInstanceId": best.get("resetInstanceId"),
                 "initialStateHash": best.get("initialStateHash"),
+                "detail": best.get("detail"),
             },
             "latestVerification": None
             if not verifications
@@ -157,6 +214,8 @@ def snapshot(store: Store, run_id: str) -> dict:
             "edges": edges,
             "witness": witness,
             "checks": run.get("checks") or [],
+            "goalAttempts": run.get("goalAttempts") or [],
+            "coveragePaths": task.get("coveragePaths") or [],
             "decisions": [
                 {
                     "id": item.get("id"),
@@ -167,14 +226,56 @@ def snapshot(store: Store, run_id: str) -> dict:
                     "U": item.get("U"),
                 }
                 for item in store.records(run_id, "decision")
-            ][-8:],
+            ][-24:],
             "activity": [
-                {"seq": event["seq"], "type": event["type"], "summary": event["payload"].get("summary") or event["type"]}
+                {
+                    "seq": event["seq"],
+                    "type": event["type"],
+                    "summary": event["payload"].get("summary") or event["type"],
+                    "reason": event["payload"].get("reason") or "",
+                    "outcome": event["payload"].get("outcome") or "",
+                    "url": event["payload"].get("url") or "",
+                }
                 for event in events
-            ][-40:],
+            ][-200:],
             "evidence": store.evidence_list(run_id),
             "limitations": run.get("limitations") or [],
             "restoration": run.get("restoration") or task.get("restoration"),
+            "identity": {
+                "goal": task.get("objective"),
+                "url": task.get("url"),
+                "taskId": task["id"],
+                "taskVersion": task["version"],
+                "buildId": run.get("buildId"),
+                "model": (run.get("versions") or {}).get("model") or task.get("model"),
+                "promptSet": (run.get("versions") or {}).get("promptSet"),
+                "policyId": run.get("policyId"),
+                "persona": task.get("persona"),
+                "queries": task.get("queries") or [],
+            },
+            "routes": {
+                "best": None if not best else _route_view(best),
+                "failed": [_route_view(item) for item in verifications if item.get("status") == "failed"],
+                "historical": [_route_view(item) for item in verifications if item.get("status") == "passed" and item.get("stale")],
+                "candidates": [
+                    {"routeId": item.get("id"), "status": item.get("status"), "interactions": item.get("interactions")}
+                    for item in store.records(run_id, "route")
+                    if not best or item.get("id") != best.get("routeId")
+                ],
+            },
+            "attempt": []
+            if not verifications
+            else [
+                {
+                    "index": index,
+                    "kind": action.get("kind"),
+                    "name": (action.get("target") or {}).get("name"),
+                    "interactions": (action.get("cost") or {}).get("interactions", 1),
+                    "status": verifications[-1].get("status"),
+                    "stale": bool(verifications[-1].get("stale")),
+                }
+                for index, action in enumerate(verifications[-1].get("actions") or [], start=1)
+            ],
         },
         "versions": run.get("versions") or {},
     }

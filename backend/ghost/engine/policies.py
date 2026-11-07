@@ -16,12 +16,17 @@ def prompt_payload(task: dict, observation: dict, candidates: list[dict], histor
         "url": observation.get("url"),
         "visibleText": (observation.get("text") or "")[:1800],
         "recentActions": history[-8:],
+        "persona": {
+            "name": task.get("personaName") or task.get("persona") or "",
+            "profile": (task.get("personaProfile") or "")[:800],
+            "priorities": (task.get("personaPriorities") or "")[:400],
+        },
         "candidates": [
             {
                 "id": item["id"],
                 "kind": item["kind"],
                 "role": item["target"]["role"],
-                "name": item["target"]["name"],
+                "name": item["target"]["name"] + (f" = {item['target']['value']}" if item["target"].get("value") else "") + (f" onto {item['target']['onto']}" if item["target"].get("onto") else ""),
             }
             for item in candidates
         ],
@@ -29,6 +34,7 @@ def prompt_payload(task: dict, observation: dict, candidates: list[dict], histor
             "Choose one candidate_id from candidates.",
             "Do not write code.",
             "Do not place an order.",
+            "The persona profile is a preference among the listed candidates. It does not override the task constraints.",
         ],
     }
 
@@ -89,8 +95,9 @@ class CompatibleChooser:
     needs_model = True
     force_verify = False
 
-    def __init__(self, base_url: str, store, ledger, run_id: str, task: dict):
+    def __init__(self, base_url: str, store, ledger, run_id: str, task: dict, model: str):
         self.base_url = base_url
+        self.model = model
         self.store = store
         self.ledger = ledger
         self.run_id = run_id
@@ -101,7 +108,7 @@ class CompatibleChooser:
 
     async def choose(self, observation: dict, candidates: list[dict], history: list[dict]) -> str | None:
         self.last_ok = False
-        result = await compatible_choose(self.base_url, json.dumps(prompt_payload(self.task, observation, candidates, history)))
+        result = await compatible_choose(self.base_url, json.dumps(prompt_payload(self.task, observation, candidates, history)), self.model)
         self.ledger.used_requests += 1
         total = (result.get("usage") or {}).get("total_tokens")
         if total is None:

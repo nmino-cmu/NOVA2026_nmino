@@ -34,16 +34,32 @@ def fingerprint(task: dict, action_hash: str) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
-def recommendation_for(verification: dict, evidence_ids: list[str]) -> dict:
+def recommendation_for(verification: dict, evidence_ids: list[str], task: dict | None = None) -> dict:
+    detail = (verification.get("detail") or "The check failed.").strip()
+    names = []
+    for action in verification.get("actions") or []:
+        name = (action.get("target") or {}).get("name")
+        if name:
+            names.append(str(name))
+    route = " → ".join(names) if names else "the witnessed actions"
+    objective = ((task or {}).get("objective") or "").strip()
+    claim = detail
+    impact = f"The task did not hold after {route}."
+    if objective:
+        impact = f"“{objective}” did not hold after {route}."
+    proposed = f"Change the application so this check can pass: {detail}"
+    acceptance = [item.get("id") for item in (task or {}).get("checks") or [] if item.get("id")] or ["the failed check"]
     return {
         "id": new_id("rec"),
         "verificationId": verification["id"],
         "status": "proposed",
         "evidenceIds": evidence_ids[:8],
-        "claim": "Express opened checkout before the cart commit was authoritative.",
-        "impact": "A shopper can see a ready checkout while the cart is still empty.",
-        "proposed": "Wait until the cart commit succeeds, then open checkout. Keep the same Express control and the same checkout check.",
-        "acceptance": ["orbit.initial.v1", "orbit.invariants.v1", "orbit.checkout.v1"],
+        "observation": detail,
+        "claim": claim,
+        "impact": impact,
+        "unknowns": [] if verification.get("detail") else ["The failure detail was not recorded."],
+        "proposed": proposed,
+        "acceptance": acceptance,
         "source": "witnessed-failure",
     }
 
@@ -52,7 +68,7 @@ def brief_markdown(recommendation: dict, build_id: str) -> str:
     evidence = ", ".join(recommendation.get("evidenceIds") or []) or "none"
     return "\n".join(
         [
-            "# Orbit Supply brief",
+            "# Implementation brief",
             "",
             "This brief describes a behavior change. It is not permission to edit a repository.",
             "",

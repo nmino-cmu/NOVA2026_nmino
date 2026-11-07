@@ -59,6 +59,7 @@ async def run_keyboard(settings, store, browser, run_id: str) -> None:
             status="passed" if passed else "failed",
             stopReason="completed_target" if passed else "search_envelope_exhausted",
             buildId="keyboard-local",
+            limitations=["This is one scripted focus-and-Enter confirmation. It is not a general keyboard-only policy."],
             checks=[{"id": "keyboard.confirm", "name": "Focused Enter confirms the desk", "status": verification["status"], "detail": verification["detail"]}],
         )
     finally:

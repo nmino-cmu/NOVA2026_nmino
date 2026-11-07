@@ -23,5 +23,6 @@ build/
 
 # Ghost Users local runtime (releases/ stays tracked)
 .data/
+.data-live-demo/
 *.sqlite3
 *.sqlite3-*

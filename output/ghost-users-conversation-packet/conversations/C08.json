@@ -1,0 +1,62 @@
+{
+  "sourceId": "C08",
+  "id": "6aef5015-9034-83ea-8c16-8a00652fe5b3",
+  "title": "Speculative Decoding Models",
+  "kind": "chatgpt",
+  "createdAt": 1794068502.168006,
+  "updatedAt": 1794068831.545295,
+  "page": {
+    "order": "newest_first",
+    "limit": 10,
+    "nextCursor": null,
+    "hasMore": false
+  },
+  "turns": [
+    {
+      "id": "e34f591e-c736-4452-bda5-116fbc4647fe",
+      "turn": 1,
+      "startedAt": 1794068514.898,
+      "completedAt": 1794068558.931549,
+      "status": "completed",
+      "messages": [
+        {
+          "id": "e34f591e-c736-4452-bda5-116fbc4647fe",
+          "role": "user",
+          "phase": null,
+          "text": "are ther emodels from LM studio that I can use for speculative decoding on Qwen 3.6 35 B",
+          "truncated": false
+        },
+        {
+          "id": "1d880650-d803-4c8b-8023-b8c08e337413",
+          "role": "assistant",
+          "phase": null,
+          "text": "**Yes. For Qwen3.6-35B-A3B, there are two practical speculative-decoding options in LM Studio.** Both avoid relying on an ordinary smaller Qwen model.\n\n## 1\\. Recommended: Qwen3.6-35B-A3B-Splash\n\n**urlQwen3.6-35B-A3B-Splashhttps://huggingface.co/incoai/Qwen3.6-35B-A3B-Splash**\n\nUses a dedicated DFlash 2 draft model bundled with the main Qwen model.\n\n(Recommended)\n\nLM Studio officially supports this through its Splash runtime. The download includes a 4-bit Qwen3.6-35B-A3B model and a specialized 0.5 GB speculative drafter. No separate draft-model selection is necessary. citeturn323566search0turn323566search1\n\nOn your M4 Pro Mac with 48 GB unified memory, the hardware meets the published requirements, provided you're running macOS 26.4 or newer.\n\n**Setup\\:**\n\n1. Install LM Studio Bionic 1.1.5 or newer.\n2. Open Settings → Runtime → Experimental backends.\n3. Install **Splash (Metal)**\\.\n4. In Explore, search for `incoai/Qwen3.6-35B-A3B-Splash`\\.\n5. Download and run it.\n\nInco AI reports approximately 210 tokens/second on short prompts using an M5 Pro with 48 GB memory. That is a developer benchmark, **not an expected speed for your M4 Pro**, but it suggests substantial potential. citeturn323566search0turn323566search1\n\n## 2\\. Alternative: Qwen3.6-35B-A3B-MTP-GGUF\n\n**urlUnsloth Qwen3.6 MTP GGUFhttps://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF**\n\nThis version embeds its own Multi-Token Prediction (MTP) capability. It doesn't need a separate small Qwen model.\n\nLM Studio added MTP support for GGUF models in version 0.4.14. To use it, download an MTP-enabled GGUF, open the advanced model-loading settings, and enable MTP speculative decoding. citeturn284720search0turn323566search5turn284720search3\n\nUnsloth reports roughly 1.5–2× speedups, although actual improvements depend on hardware, quantization, context length, and workload.\n\n## What about using Qwen3.5-0.8B as a draft?\n\nI would **not recommend this as your first approach**\\. Despite tokenizer similarities, LM Studio has had compatibility issues pairing smaller Qwen3.5 dense models with MoE targets. There's also a specific report of the Qwen3.6-35B-A3B draft-model dropdown remaining empty. citeturn135926search2turn135926search1\n\nOne additional development: LM Studio Bionic 1.1.10, released October 29, added speculative decoding for MLX models. However, I couldn't verify a working small-model pairing for your exact Qwen3.6 checkpoint. citeturn284720search5\n\n**My recommendation\\:** Try Splash first if you prioritize speed. If you want to preserve your existing 8-bit MLX quantization, neither the 4-bit Splash package nor the GGUF MTP option is a drop-in addition to those exact weights.",
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "c1393697-88f1-415a-a9fd-73c58910f6b3",
+      "turn": 2,
+      "startedAt": 1794068756.215,
+      "completedAt": 1794068807.17889,
+      "status": "completed",
+      "messages": [
+        {
+          "id": "c1393697-88f1-415a-a9fd-73c58910f6b3",
+          "role": "user",
+          "phase": null,
+          "text": "Models\n\nMy Models\n\nMy Models\n\nFilter models... (⌘F)\nArch▲\tParams▲\tPublisher▲\tLLM▲\tQuant▲\tSize▲\tModified▲\t\t\nActions\nqwen3_5_moe\n\n35B\n\nYoussofal\n\nqwen3.6-35b-a3b-abliterated-heretic-mlx\n\n\n6bit\n\n30.1 GB\n\n53 days ago\n\nqwen3_5_mtp\n\n27B\n\nmlx-community\n\nqwen3.8-27b-mtp\n\n\n8bit\n\n478.0 MB\n\n66 days ago\n\nqwen2\n\n0.5B\n\nlmstudio-community\n\nqwen2.5-0.5b-instruct-mlx\n\n\n4bit\n\n294.0 MB\n\n80 days ago\n\nqwen3_5\n\n27B\n\nlmstudio-community\n\nqwen/qwen3.8-27b\n\n\n\n8bit\n\n29.5 GB\n\n81 days ago\n\nYou have 4 local models, taking up 60.43 GB of disk space\n\n/Users/nicholasmino/.lmstudio/models\n\nQwen3.6-35B-A3B-Abliterated-Heretic-MLX-6bit\n\n\n\n\nModel Information\n\nModel\n\nFormat\n\nQuantization\n\nArch\n\nCapabilities\n\nDomain\n\nSize on disk\n\n35B MTP\n380 models\n\n🤗\n\nQwen3.6-35B-A3B-Claude-4.7-Opus-Reasoning-Distilled-MLX-oQ4-MTP\n\nstamsam\n\n179 days ago\n\n🤗\n\nQwen3.6-35B-A3B-oQ4e-mtp\n\nJundot\n\n9 days ago\n\n🤗\n\nCyber-Tiel-Coder-35B-A3B-MLX-oQ4e-MTP\n\npeculiar-ragdoll\n\n2 days ago\n\n🤗\n\nOrnith-1.0-35B-MTPLX\n\nwang-yang\n\n130 days ago\n\n🤗\n\nTiel-Coder-35B-A3B-MLX-oQ4e-MTP\n\npeculiar-ragdoll\n\n2 days ago\n\n🤗\n\nCyber-Tiel-Coder-35B-A3B-MLX-oQ6e-MTP\n\npeculiar-ragdoll\n\n2 days ago\n\n🤗\n\nQwen3.6-35B-A3B-MTPLX-Optimized-Balance\n\nYoussofal\n\n51 days ago\n\n🤗\n\nOrnith-1.5-35B-A3B-oQ4e-fp16-mtp\n\nscottlowry\n\n12 days ago\n\n🤗\n\nOrnith-1.5-35B-A3B-oQ4e-mtp\n\nscottlowry\n\n12 days ago\n\n🤗\n\nTiel-Coder-35B-A3B-MLX-oQ6e-MTP\n\npeculiar-ragdoll\n\n2 days ago\n\n🤗\n\nRavenX-CyberAgent-Qwen3.6-35B-A3B-Opus-4.7-OpenMythos-Pentester-BugHunter-RATH-mlx-4bit-mtp-msq\n\nmlx-community\n\n139 days ago\n\n🤗\n\nOrnith-1.5-35B-A3B-oQ6e-mtp\n\nscottlowry\n\n12 days ago\n\n🤗\n\nQwen3.6-35B-A3B-4bit-MTPLX-Optimized-Speed\n\nsamuelfaj\n\n183 days ago\n\n🤗\n\nQwen3.6-35B-A3B-NSC-ACE-SABER-8bit-MTPLX-Optimized-Speed\n\nsamuelfaj\n\n179 days ago\n\nJundot/Qwen3.6-35B-A3B-oQ4e-mtp\n23,260\n29\nLast updated:\n9 days ago\n\nFormat\nMLX\nCapabilities\n\nVision\nTool Use\n\nDownload Options\nFull GPU Offload Possible\n\n\nREADME\nQwen3.6-35B-A3B-oQ4e-mtp\n[!NOTE]\nUpdated 2026-10-29: Re-quantized with the improved oQe quantization in oMLX 0.7.3. Please re-download if you have an earlier copy.\n\nThis model was quantized using oQ (oMLX v0.7.3) mixed-precision quantization with improved oQe (jundot/omlx#4930).\n\nA mixed-precision MLX checkpoint of Qwen/Qwen3.6-35B-A3B, a mixture-of-experts vision-language model with 35B total and 3B activated parameters and a hybrid layout of Gated DeltaNet and Gated Attention layers. It includes the language model, the vision encoder and the multi-token prediction (MTP) head.\n\nThe effective average is 4.786 bits/weight for the language backbone and 4.925 bits/weight for the complete checkpoint.\n\nQuantization and Bit Distribution\noQ4e allocates bits by measured layer sensitivity, then rounds each group with an importance matrix (128 samples x 512 tokens) and a weighted least-squares refit of its scale and bias.\n\nStorage format\tLogical weights\tShare of total\tTensor storage\tEffective bits/weight\nAffine 4-bit, group 64\t33.018B\t91.838%\t17.297 GiB\t4.50\nAffine 8-bit, group 128\t0.129B\t0.359%\t0.124 GiB\t8.25\nAffine 8-bit, group 64\t2.328B\t6.474%\t2.303 GiB\t8.50\nBF16\t0.478B\t1.329%\t0.890 GiB\t16.00\nTotal\t35.952B\t100%\t20.614 GiB\t4.925\nStorage Breakdown\nComponent\tLogical weights\tStorage\nLanguage backbone\t34.661B\t20.738 GB / 19.313 GiB\nVision encoder\t0.447B\t0.893 GB / 0.832 GiB\nMTP head\t0.845B\t0.503 GB / 0.468 GiB\nTotal\t35.952B\t22.134 GB / 20.614 GiB\nLicense\nApache-2.0, following the source model. See LICENSE.\n\n END does this work",
+          "truncated": false
+        },
+        {
+          "id": "4737fe5e-4723-40f9-87fa-f36272ec9407",
+          "role": "assistant",
+          "phase": null,
+          "text": "**Yes, the Jundot model is a valid MTP-enabled Qwen3.6-35B-A3B checkpoint. However, whether speculative decoding actually works depends on which LM Studio inference engine you use.**\n\nThe checkpoint includes\\:\n\n- Full Qwen3.6-35B-A3B model weights.\n- A built-in 845M-parameter MTP head.\n- Mixed-precision oQ4e quantization.\n- Approximately 22.1 GB of model weights, versus 30.1 GB for your existing 6-bit abliterated model. citeturn156393search2\n\n**Important\\:** This is a replacement main model, not a draft model you attach to your existing `Qwen3.6-35B-A3B-Abliterated-Heretic-MLX-6bit`\\.\n\nThere's a runtime distinction\\:\n\n| Inference engine | Built-in MTP |\n|--------|--------|\n| LM Studio's standard MLX engine | Not confirmed; an open issue reports embedded MTP heads being ignored |\n| oMLX | Supported |\n| LM Studio's GGUF/llama.cpp engine | Supported for compatible MTP GGUF models |\n\nLM Studio's MLX limitation is documented in an open issue. citeturn931436view0 The oMLX runtime has demonstrated native MTP operation with this model family. citeturn156393search4\n\n## What I recommend for your M4 Pro\n\n1. Download urlJundot/Qwen3.6-35B-A3B-oQ4e-mtphttps://huggingface.co/Jundot/Qwen3.6-35B-A3B-oQ4e-mtp\\.\n2. Use the **oMLX inference engine**, rather than standard MLX. LM Studio added oMLX integration in late October 2026. citeturn931436view1\n3. Enable native MTP in the engine's model settings, if exposed. Start with 2–3 draft tokens.\n4. Compare generation speed with MTP enabled and disabled using identical prompts.\n\nYour 48 GB unified memory should be sufficient for this 22.1 GB checkpoint with substantial room for runtime overhead and KV cache, although long contexts still affect memory usage.\n\nA published benchmark of this exact checkpoint on an M5 Max measured approximately 100 tokens/s without MTP and 119 tokens/s with MTP. Your M4 Pro will have different performance. citeturn138111search5\n\n**One caveat\\:** Your existing model is *Abliterated-Heretic*, whereas this Jundot model uses the original Qwen weights. They will not necessarily behave identically.\n\nAlso, your existing `Qwen3.8-27B-MTP` file is a 27B-specific drafter, not suitable for the 35B model.\n\n**Bottom line\\:** The Jundot checkpoint is appropriate, and oMLX supports its MTP architecture. I have not verified that LM Studio's newly integrated oMLX backend exposes and activates MTP for this exact checkpoint, so I would verify that setting before assuming the acceleration is working.",
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

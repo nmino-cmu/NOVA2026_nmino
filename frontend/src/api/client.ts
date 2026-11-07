@@ -77,8 +77,65 @@ export function getPlayback(id: string): Promise<PlaybackPayload> {
   );
 }
 
+function apiOrigin(): string {
+  return (import.meta.env.VITE_API_ORIGIN || "").replace(/\/$/, "");
+}
+
 export function evidenceUrl(id: string): string {
-  return `/api/evidence/${encodeURIComponent(id)}`;
+  const name = encodeURIComponent(id);
+  if (import.meta.env.VITE_STATIC_DEMO === "1") {
+    const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+    return `${base}/api/evidence/${name}.jpg`;
+  }
+  return `${apiOrigin()}/api/evidence/${name}`;
+}
+
+// The public site is static. API calls go to the live Ghost process.
+export function installApiOrigin(): void {
+  const origin = apiOrigin();
+  if (!origin) return;
+  const orig = window.fetch.bind(window);
+  window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+    const raw = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    let url: URL;
+    try {
+      url = new URL(raw, window.location.origin);
+    } catch {
+      return orig(input, init);
+    }
+    const at = url.pathname.indexOf("/api/");
+    if (url.origin !== window.location.origin || at < 0) return orig(input, init);
+    return orig(`${origin}${url.pathname.slice(at)}${url.search}`, init);
+  };
+}
+
+// Published pages have no Ghost API. GET /api/* reads snapshot JSON. Other methods explain that.
+export function installStaticDemoFetch(): void {
+  if (import.meta.env.VITE_STATIC_DEMO !== "1") return;
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+  const orig = window.fetch.bind(window);
+  window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+    const raw = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    const method = (
+      init?.method || (input instanceof Request ? input.method : "GET")
+    ).toUpperCase();
+    const url = new URL(raw, window.location.origin);
+    const marker = "/api/";
+    const at = url.pathname.indexOf(marker);
+    if (url.origin !== window.location.origin || at < 0) return orig(input, init);
+    if (method !== "GET" && method !== "HEAD") {
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            detail: "This page is a recorded demo. Republish the snapshot to update the investigation.",
+          }),
+          { status: 409, headers: { "content-type": "application/json" } },
+        ),
+      );
+    }
+    const rest = url.pathname.slice(at + marker.length);
+    return orig(`${base}/snapshot/${rest}.json`);
+  };
 }
 
 export function newIdempotencyKey(): string {

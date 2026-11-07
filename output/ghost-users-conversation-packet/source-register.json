@@ -1,0 +1,1274 @@
+{
+  "capture": {
+    "captured_at": "2026-11-07T16:43:18-05:00",
+    "scope": "Ghost Users and connected NOVA2026 planning, design, algorithm, implementation and audits",
+    "listing_counts": {
+      "active_codex": 90,
+      "archived_codex": 18,
+      "active_chatgpt": 469,
+      "archived_chatgpt": 0
+    },
+    "listing_pagination_exhausted": true,
+    "source_conversations": 12,
+    "user_messages": 46,
+    "assistant_messages": 77,
+    "truncated_messages": [
+      "C11.T01.M02"
+    ],
+    "limits": [
+      "Returned histories may omit earlier messages even though nextCursor is null.",
+      "C11 assistant response is explicitly truncated at 20000 characters.",
+      "No unseen historical content has been reconstructed.",
+      "Local status documents and prior audits are historical evidence; no fresh app acceptance test was performed."
+    ],
+    "exclusions": [
+      "Hidden reasoning",
+      "Tools and terminal output",
+      "System/developer instructions",
+      "Unrelated conversations",
+      "Frozen release contents",
+      "The packet-creation conversation itself"
+    ]
+  },
+  "conversations": [
+    {
+      "sourceId": "C01",
+      "title": "AI Beta Testing Idea",
+      "id": "6aef3ee1-9488-83e9-8ef7-c60818deb904",
+      "kind": "chatgpt",
+      "returned_turns": 5,
+      "returned_messages": 10,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C02",
+      "title": "Brainstorm NOVA Ideas",
+      "id": "6aef41a0-2cf0-83e9-b8bc-bf175b756b87",
+      "kind": "chatgpt",
+      "returned_turns": 1,
+      "returned_messages": 2,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C03",
+      "title": "Develop NOVA hackathon project ideas",
+      "id": "01a1b698-c807-70d0-872d-1bf5fca6eaf6",
+      "kind": "codex",
+      "returned_turns": 1,
+      "returned_messages": 6,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C04",
+      "title": "Branch · AI Beta Testing Idea",
+      "id": "6aef4697-c594-83ea-9bdd-3b182af37b4d",
+      "kind": "chatgpt",
+      "returned_turns": 5,
+      "returned_messages": 9,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C05",
+      "title": "CMU Figma AI Access",
+      "id": "6aef4a82-8dd8-83ea-858a-d84a76b47252",
+      "kind": "chatgpt",
+      "returned_turns": 3,
+      "returned_messages": 5,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C06",
+      "title": "Branch · Branch · AI Beta Testing Idea",
+      "id": "6aef4ddc-449c-83ea-a3a9-84ed170f8398",
+      "kind": "chatgpt",
+      "returned_turns": 5,
+      "returned_messages": 9,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C07",
+      "title": "Develop Graph Algorithm From File",
+      "id": "01a1b6cd-c403-73a0-ac6b-832131e8215f",
+      "kind": "codex",
+      "returned_turns": 2,
+      "returned_messages": 9,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C08",
+      "title": "Speculative Decoding Models",
+      "id": "6aef5015-9034-83ea-8c16-8a00652fe5b3",
+      "kind": "chatgpt",
+      "returned_turns": 2,
+      "returned_messages": 4,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C09",
+      "title": "Define NOVA project scope and algorithms",
+      "id": "01a1b6d9-147e-7461-8d95-99b72281cc2f",
+      "kind": "codex",
+      "returned_turns": 7,
+      "returned_messages": 29,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C10",
+      "title": "Create Cursor build brief for Ghost…",
+      "id": "01a1b705-9ff1-72f1-84d4-4121a006d2e3",
+      "kind": "codex",
+      "returned_turns": 5,
+      "returned_messages": 15,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C11",
+      "title": "Figma UI Prompt",
+      "id": "6aef70a0-d3a8-83e9-9c96-7d21e0ce1f05",
+      "kind": "chatgpt",
+      "returned_turns": 1,
+      "returned_messages": 2,
+      "older_cursor": null
+    },
+    {
+      "sourceId": "C12",
+      "title": "Show the Figma file",
+      "id": "01a1b77e-0f3d-71d2-8155-588acca8bf56",
+      "kind": "codex",
+      "returned_turns": 6,
+      "returned_messages": 23,
+      "older_cursor": null
+    }
+  ],
+  "messages": [
+    {
+      "sourceId": "C01",
+      "label": "C01.T01.M01",
+      "role": "user",
+      "chars": 679,
+      "truncated": false,
+      "sha256": "42846d34b4855f8682d07b045e1610fad0add33ba276f60de2a469087ef0daaa"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T01.M02",
+      "role": "assistant",
+      "chars": 14367,
+      "truncated": false,
+      "sha256": "83c3170bdfc7ee926df7fe9d0655408060248284439552235c907f58332a0cac"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T02.M01",
+      "role": "user",
+      "chars": 600,
+      "truncated": false,
+      "sha256": "81175c16bd870fad063691fbe2f8bffbf54e09c34b9303edb3dc9c0f7d872a76"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T02.M02",
+      "role": "assistant",
+      "chars": 18053,
+      "truncated": false,
+      "sha256": "26ec5c19c69cd21b735a5946dcfd6c4cc1e6f3ec8c468e505674195db8477fc8"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T03.M01",
+      "role": "user",
+      "chars": 348,
+      "truncated": false,
+      "sha256": "0656da89a319d1f66876dc4731424722f0cb6f5096500cb66044f7c6b4bf9e51"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T03.M02",
+      "role": "assistant",
+      "chars": 7528,
+      "truncated": false,
+      "sha256": "4e90b1d079e3f3b912e5696c5c8867e3db0fc23965bd4931f5e32e75453cf3c4"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T04.M01",
+      "role": "user",
+      "chars": 140,
+      "truncated": false,
+      "sha256": "55a881c40b28f9743d0a07108d67adda9d3158168b01ed285688f32c8e9a8081"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T04.M02",
+      "role": "assistant",
+      "chars": 2228,
+      "truncated": false,
+      "sha256": "76c0046d5ac18c9b65a81628f71dd4cdeea8f51853f159ab19836d5617d3d225"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T05.M01",
+      "role": "user",
+      "chars": 97,
+      "truncated": false,
+      "sha256": "a0335c2e03c8da7a8b5db6436ecfc432be3de4436fa537a9f10f3cb3cfabbec7"
+    },
+    {
+      "sourceId": "C01",
+      "label": "C01.T05.M02",
+      "role": "assistant",
+      "chars": 1847,
+      "truncated": false,
+      "sha256": "0f37cea1c3c32b8c2ca2c2abc2d81e1574b2bb22a5d4273a1fb07af2fe0b9c6e"
+    },
+    {
+      "sourceId": "C02",
+      "label": "C02.T01.M01",
+      "role": "user",
+      "chars": 89,
+      "truncated": false,
+      "sha256": "bbddfcfb570e82e77a25352a831925190522787aa0736c00515bb16f5e2060cc"
+    },
+    {
+      "sourceId": "C02",
+      "label": "C02.T01.M02",
+      "role": "assistant",
+      "chars": 507,
+      "truncated": false,
+      "sha256": "41597ef15165d2c1b4fc3c47cd508d3dab806d27f57c801581a4d213e8524cea"
+    },
+    {
+      "sourceId": "C03",
+      "label": "C03.T01.M01",
+      "role": "user",
+      "chars": 1301,
+      "truncated": false,
+      "sha256": "6be4c4a577fd8bab24cf8276bd514b1078f4148f85c9e6932b8ee167b7e1fbee"
+    },
+    {
+      "sourceId": "C03",
+      "label": "C03.T01.M02",
+      "role": "assistant",
+      "chars": 146,
+      "truncated": false,
+      "sha256": "ca7f135645df627285e8391073ab4a5f69694ff268087bff85e10f2ec4d59dc7"
+    },
+    {
+      "sourceId": "C03",
+      "label": "C03.T01.M03",
+      "role": "assistant",
+      "chars": 253,
+      "truncated": false,
+      "sha256": "6113eef7afe834c742e1d5a5cc916d73ee24cef715a98e617aa5d18b2d39e3db"
+    },
+    {
+      "sourceId": "C03",
+      "label": "C03.T01.M04",
+      "role": "user",
+      "chars": 98,
+      "truncated": false,
+      "sha256": "d3d6b5eab7d8aa30d51f8c379d8d2057635ed560f985d55bb9c5e1ddec75d158"
+    },
+    {
+      "sourceId": "C03",
+      "label": "C03.T01.M05",
+      "role": "assistant",
+      "chars": 208,
+      "truncated": false,
+      "sha256": "f2bd62104e884356c25e5facb6c685dd1e1f5f6b918fd3c6fb287b8cf497eee5"
+    },
+    {
+      "sourceId": "C03",
+      "label": "C03.T01.M06",
+      "role": "assistant",
+      "chars": 12765,
+      "truncated": false,
+      "sha256": "909289149eec40a53970a6628e937578b70f5e8b2d5e96cbe7b31bc2f8c4a3fa"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T01.M01",
+      "role": "user",
+      "chars": 147,
+      "truncated": false,
+      "sha256": "37b68db789e62e81deb0321aea18e324bbf00f30891078cd4979f1f3f19fb754"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T01.M02",
+      "role": "assistant",
+      "chars": 8372,
+      "truncated": false,
+      "sha256": "9cfda273af131c450d38ef860efd9e3c52953141cce772168a62ac5cec4ca557"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T02.M01",
+      "role": "user",
+      "chars": 27,
+      "truncated": false,
+      "sha256": "9f0dd847796ccf1f1500bfb93fd9c3bae48b3029d8948197c040ef7292e48ace"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T03.M01",
+      "role": "user",
+      "chars": 36,
+      "truncated": false,
+      "sha256": "18f6f43761f6526997ac0ca38b2c46618f4d9ece97243aa39cadf38a65cfd9af"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T03.M02",
+      "role": "assistant",
+      "chars": 2966,
+      "truncated": false,
+      "sha256": "ea4481c1b25734524d931fbd65ef08e35e6f411d83eac2e214d05dcdc541120e"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T04.M01",
+      "role": "user",
+      "chars": 251,
+      "truncated": false,
+      "sha256": "8881f98760e43f64e5e6b88021f4e42b75300fe3b6af1fc28429ae62fe705ae2"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T04.M02",
+      "role": "assistant",
+      "chars": 8031,
+      "truncated": false,
+      "sha256": "4ff2041f3e54144dd95a8af3e9d99a3f67f1b2feee674d575dc5966733674d9e"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T05.M01",
+      "role": "user",
+      "chars": 139,
+      "truncated": false,
+      "sha256": "bc3acef8139ed79afc4d7a8b8dcf5baa3d668393bd1c227250d1fe0d650adfe8"
+    },
+    {
+      "sourceId": "C04",
+      "label": "C04.T05.M02",
+      "role": "assistant",
+      "chars": 1291,
+      "truncated": false,
+      "sha256": "0e5395479b6ec777b32d5d2151f7659bf691782af694c71108162516c7fa9c03"
+    },
+    {
+      "sourceId": "C05",
+      "label": "C05.T01.M01",
+      "role": "user",
+      "chars": 32,
+      "truncated": false,
+      "sha256": "00129b81310fbc67167e2a8424d9833385bcdcb5d5e3fa6350e8e9a239a95ffd"
+    },
+    {
+      "sourceId": "C05",
+      "label": "C05.T02.M01",
+      "role": "user",
+      "chars": 39,
+      "truncated": false,
+      "sha256": "f2c1bc26ed16fe18344b3ec653655b4700f3cf6e6b2c36d4d2f62b2520ae9af0"
+    },
+    {
+      "sourceId": "C05",
+      "label": "C05.T02.M02",
+      "role": "assistant",
+      "chars": 2488,
+      "truncated": false,
+      "sha256": "3c59b84b08c80243944f43373b306ef17527e22330bdd73e983f2d787156420e"
+    },
+    {
+      "sourceId": "C05",
+      "label": "C05.T03.M01",
+      "role": "user",
+      "chars": 49,
+      "truncated": false,
+      "sha256": "21d5224e5c80e54544dc8aa46a2e85ce7d16f6185126cae7a959676b46588040"
+    },
+    {
+      "sourceId": "C05",
+      "label": "C05.T03.M02",
+      "role": "assistant",
+      "chars": 3346,
+      "truncated": false,
+      "sha256": "33a29f68431847bc5e9ed975f4e3881623916b0b06926fcee47821454fdb9b2a"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T01.M01",
+      "role": "user",
+      "chars": 27,
+      "truncated": false,
+      "sha256": "9f0dd847796ccf1f1500bfb93fd9c3bae48b3029d8948197c040ef7292e48ace"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T02.M01",
+      "role": "user",
+      "chars": 36,
+      "truncated": false,
+      "sha256": "18f6f43761f6526997ac0ca38b2c46618f4d9ece97243aa39cadf38a65cfd9af"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T02.M02",
+      "role": "assistant",
+      "chars": 2966,
+      "truncated": false,
+      "sha256": "ea4481c1b25734524d931fbd65ef08e35e6f411d83eac2e214d05dcdc541120e"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T03.M01",
+      "role": "user",
+      "chars": 251,
+      "truncated": false,
+      "sha256": "8881f98760e43f64e5e6b88021f4e42b75300fe3b6af1fc28429ae62fe705ae2"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T03.M02",
+      "role": "assistant",
+      "chars": 8031,
+      "truncated": false,
+      "sha256": "4ff2041f3e54144dd95a8af3e9d99a3f67f1b2feee674d575dc5966733674d9e"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T04.M01",
+      "role": "user",
+      "chars": 36,
+      "truncated": false,
+      "sha256": "d546ad8a77b80016ddd4861926b98cb120e763fd0af15422090e20feae28d9e5"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T04.M02",
+      "role": "assistant",
+      "chars": 6787,
+      "truncated": false,
+      "sha256": "5f279a04ffa5828db7ee4e9cf758d70a24d090abf4cce2d24c9c6e5fd15dd578"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T05.M01",
+      "role": "user",
+      "chars": 147,
+      "truncated": false,
+      "sha256": "619dd7359e29cc1301497a4138c7c906812911bf1a541e2f0f25d2b8d1d17e8e"
+    },
+    {
+      "sourceId": "C06",
+      "label": "C06.T05.M02",
+      "role": "assistant",
+      "chars": 3865,
+      "truncated": false,
+      "sha256": "2c5b925d6a3ccb450663ccfc46d43d97a91cacaf2de1ae822e4db464c7a287f9"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T01.M01",
+      "role": "user",
+      "chars": 278,
+      "truncated": false,
+      "sha256": "864e144c02cb83f442b8af09e189bf74be0b690d5b8aacfa57e99c49f66fe347"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T01.M02",
+      "role": "assistant",
+      "chars": 107,
+      "truncated": false,
+      "sha256": "c3f6dab7840fdd137e033c59e7eb8ea6927370b15f86cad7bc57cfe43cfe93ee"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T01.M03",
+      "role": "assistant",
+      "chars": 393,
+      "truncated": false,
+      "sha256": "8e872af610d4c587405054c643cfc9a0ce8bb16ca6fbce9c00c6a6fdbe53b6b9"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T02.M01",
+      "role": "user",
+      "chars": 268,
+      "truncated": false,
+      "sha256": "d9e4862aad48a2b6055ad348937270922b7958b4e1c214528eb8dd83bccd675d"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T02.M02",
+      "role": "assistant",
+      "chars": 107,
+      "truncated": false,
+      "sha256": "3f2b862e1ee7580407df941e52a3c9feee1059c76c31b78bd64d1c477e3b7b6f"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T02.M03",
+      "role": "assistant",
+      "chars": 278,
+      "truncated": false,
+      "sha256": "d364dd800b10153acb4f7fb23859a680247ab9d960a05558c980406cebddaa12"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T02.M04",
+      "role": "assistant",
+      "chars": 378,
+      "truncated": false,
+      "sha256": "866061a581b4e2b95890a5cdf652bceb44aec44082cb7d7dbcb3cac0e570617e"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T02.M05",
+      "role": "assistant",
+      "chars": 391,
+      "truncated": false,
+      "sha256": "967a9a26155cce90a64a46bc9b6c1e0bad170426ecf0e41d610e5e133fbcae3c"
+    },
+    {
+      "sourceId": "C07",
+      "label": "C07.T02.M06",
+      "role": "assistant",
+      "chars": 55191,
+      "truncated": false,
+      "sha256": "ca39c23d988e43dac09b04288a723190f4f4da925320f02761874665668b833e"
+    },
+    {
+      "sourceId": "C08",
+      "label": "C08.T01.M01",
+      "role": "user",
+      "chars": 88,
+      "truncated": false,
+      "sha256": "252df923dd2133a1b7abc277fc47d9f7b0cac1641531159c6a2985673f95c31f"
+    },
+    {
+      "sourceId": "C08",
+      "label": "C08.T01.M02",
+      "role": "assistant",
+      "chars": 2708,
+      "truncated": false,
+      "sha256": "296d92359024ee699d5f777e6baf9087571466acea3a02fa7d37db14687334b0"
+    },
+    {
+      "sourceId": "C08",
+      "label": "C08.T02.M01",
+      "role": "user",
+      "chars": 3421,
+      "truncated": false,
+      "sha256": "06ab99375a109665aa517c611334e77f578a4544c9acde2ed53234e1c0f88afb"
+    },
+    {
+      "sourceId": "C08",
+      "label": "C08.T02.M02",
+      "role": "assistant",
+      "chars": 2498,
+      "truncated": false,
+      "sha256": "68e2677106bfab424fc0964a44975702b757d428dce4956d8eb2e9c7ed8a737f"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T01.M01",
+      "role": "user",
+      "chars": 419,
+      "truncated": false,
+      "sha256": "466de99e9a8338636ba2b12c049c769183d4ec96761b24ec057307f4ab6230ee"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T01.M02",
+      "role": "assistant",
+      "chars": 185,
+      "truncated": false,
+      "sha256": "97368d1ca87a796777151fddb305de511753370c76eb2f015e6f1673d3783387"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T01.M03",
+      "role": "assistant",
+      "chars": 378,
+      "truncated": false,
+      "sha256": "fd49dc49860e0e58b8b776194bc614c44675317dcfbbc374388db6bcf6a52c4a"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T01.M04",
+      "role": "assistant",
+      "chars": 525,
+      "truncated": false,
+      "sha256": "acc4385fcbcb2971e57ad7c9d164d5d594981215206473ff26211745661bdea5"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T01.M05",
+      "role": "assistant",
+      "chars": 497,
+      "truncated": false,
+      "sha256": "19b09d2196867d264d3831ab0dd0c0f5cda97ba1241fe48a86927f723a57598e"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T01.M06",
+      "role": "assistant",
+      "chars": 6975,
+      "truncated": false,
+      "sha256": "233a84783336417cb4217d7642f703f9ca841b62be94b9591e95e4ecfaa980ea"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T02.M01",
+      "role": "user",
+      "chars": 148,
+      "truncated": false,
+      "sha256": "3b0480bf968d4313d6a98b6e489370bb48a0694ea98b492a760d3c295676e754"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T02.M02",
+      "role": "assistant",
+      "chars": 1698,
+      "truncated": false,
+      "sha256": "3e392b3d259d88fa5dd4e1f1a861af5d46772fe72603f7616ee42ea923b662a4"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T03.M01",
+      "role": "user",
+      "chars": 79,
+      "truncated": false,
+      "sha256": "c1b7e8f43db0178ed6ba94da37987af48ad90a19b97b3e73c3ff81da568e2a3a"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T03.M02",
+      "role": "assistant",
+      "chars": 188,
+      "truncated": false,
+      "sha256": "79c50c19d1357279e9cb917a01b3ebc79ccffb3631252464656106dad9332cc8"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T03.M03",
+      "role": "assistant",
+      "chars": 6150,
+      "truncated": false,
+      "sha256": "865be4411e20190566d39d24299b7dd35010e36aeb901f85f237ff5856af4aad"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T04.M01",
+      "role": "user",
+      "chars": 29,
+      "truncated": false,
+      "sha256": "249505871d6d7d6cd274ee5cf85bf4c4c7de5524aeba0fa75b98545b91b1cf45"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T04.M02",
+      "role": "assistant",
+      "chars": 1611,
+      "truncated": false,
+      "sha256": "01e442b8d6d62b28485e16b396dcf7da2896d1b1b32b5eb750d6e7ccd2f30cbb"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M01",
+      "role": "user",
+      "chars": 3170,
+      "truncated": false,
+      "sha256": "c93cb4419b9583ecfa59245905f849eabe9fd763e58bfd631b2392c5bf83c4d7"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M02",
+      "role": "assistant",
+      "chars": 246,
+      "truncated": false,
+      "sha256": "a7e958762c789c26a9c85b892e9e66e1ddecc9d67ff43aba61c8d7232f91f82b"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M03",
+      "role": "assistant",
+      "chars": 382,
+      "truncated": false,
+      "sha256": "08948d1bf1df434f35412c387836114cdf58e3463391d9d4e162bd98c9f6b27a"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M04",
+      "role": "assistant",
+      "chars": 472,
+      "truncated": false,
+      "sha256": "bbaec5fd8108309a7b59a8a7d02dc2b46ce9b44676f1af8cdfbc520b09055cca"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M05",
+      "role": "user",
+      "chars": 870,
+      "truncated": false,
+      "sha256": "d66d0df0941df2ebdbd1e9d8bd13dde19921d0969ed557c9ce0c0ea0cb8bb8b9"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M06",
+      "role": "assistant",
+      "chars": 494,
+      "truncated": false,
+      "sha256": "ed988f2d49f5e24923e0bef8525fb713d0e66f74d5c3ba94028a2732fb90b062"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M07",
+      "role": "assistant",
+      "chars": 810,
+      "truncated": false,
+      "sha256": "a4ccd2fd14441e560338e5b06a09851f2bc29d7531efa98955d080569b32161a"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M08",
+      "role": "user",
+      "chars": 1222,
+      "truncated": false,
+      "sha256": "fc74b74938c439e2083a653ef73d1f5fedd66391aa62f5b4ecb76e21b9cd306d"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T05.M09",
+      "role": "assistant",
+      "chars": 12769,
+      "truncated": false,
+      "sha256": "bb996ed7753981af45e31a3380ca8803c764bd0414264fe22608b72646cffe32"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T06.M01",
+      "role": "user",
+      "chars": 1079,
+      "truncated": false,
+      "sha256": "4e2bd3d648a760c53d7aececcaf36bb803dd310a87ee1f197a199734de5b6fd5"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T06.M02",
+      "role": "assistant",
+      "chars": 313,
+      "truncated": false,
+      "sha256": "6ec5827324abe76026a496a767a78f598f2c602d395e643306a8b943e95a9bea"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T06.M03",
+      "role": "assistant",
+      "chars": 303,
+      "truncated": false,
+      "sha256": "cd8e79bd45aa58039e8b6818f6c87fb246505e4eccd68dc69de55ade1275f696"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T07.M01",
+      "role": "user",
+      "chars": 37,
+      "truncated": false,
+      "sha256": "f0ff367089b92c248110c1c5a2444f744c534285eba40b35c99f7c4d7f88ba35"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T07.M02",
+      "role": "assistant",
+      "chars": 250,
+      "truncated": false,
+      "sha256": "6df3b43f2a99a9fe60be39e38f1bd07f35c42abdf4f4d6109bc9cdf89e700384"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T07.M03",
+      "role": "assistant",
+      "chars": 285,
+      "truncated": false,
+      "sha256": "6d9718cf7a8b35795f18ebfaeaf555a2258baafb3b020bbbe1e97e10b2b9ecb7"
+    },
+    {
+      "sourceId": "C09",
+      "label": "C09.T07.M04",
+      "role": "assistant",
+      "chars": 947,
+      "truncated": false,
+      "sha256": "1271a1d5073550b91c2e27691ba5d59bbf5fb20f0af39253b467d5e63210b8ba"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T01.M01",
+      "role": "user",
+      "chars": 268,
+      "truncated": false,
+      "sha256": "c4b68070cb95ff6996ddff310ea82d88c33598bad028241fc21fc7f2680af11c"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T01.M02",
+      "role": "assistant",
+      "chars": 118,
+      "truncated": false,
+      "sha256": "25636546821e4725f6b1ea02b62af056115db29b8d27578410d5b6e8c62e6ef9"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T01.M03",
+      "role": "assistant",
+      "chars": 313,
+      "truncated": false,
+      "sha256": "ac050709c004197256468beb5085071a8657470f9da2626dcd80d43cfd24b7b3"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T01.M04",
+      "role": "assistant",
+      "chars": 374,
+      "truncated": false,
+      "sha256": "8125699a1530f343ed6787848b7db6689f5a128b014e89b7fc3b92e857c19a7b"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T01.M05",
+      "role": "assistant",
+      "chars": 344,
+      "truncated": false,
+      "sha256": "5909bc31c9bf0ad65e0f90c6c25d95c5a18564899aa378a9c60fbea6adfd3814"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T02.M01",
+      "role": "user",
+      "chars": 16,
+      "truncated": false,
+      "sha256": "ed13a2c219b25b38a760ac01c89870524949d9195a38dd89a1dda0856a5d8516"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T02.M02",
+      "role": "assistant",
+      "chars": 140,
+      "truncated": false,
+      "sha256": "64a5a9ab32fa992707e874bf934dce3b82c45ff08c55654910da69175009f5c8"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T03.M01",
+      "role": "user",
+      "chars": 16,
+      "truncated": false,
+      "sha256": "ed13a2c219b25b38a760ac01c89870524949d9195a38dd89a1dda0856a5d8516"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T03.M02",
+      "role": "assistant",
+      "chars": 187,
+      "truncated": false,
+      "sha256": "fbbb6be5b077278424fd3c2c78fa55ae609b46aad68247528804bbaae47bac06"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T03.M03",
+      "role": "assistant",
+      "chars": 320,
+      "truncated": false,
+      "sha256": "488934eb177c5aa3b21fe7237776456fe007450a9840a431576f61232f56464b"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T03.M04",
+      "role": "assistant",
+      "chars": 402,
+      "truncated": false,
+      "sha256": "33df8ccef0180df9a5a8071236f39741035a8145fa1983de2da899d000d2520e"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T04.M01",
+      "role": "user",
+      "chars": 27,
+      "truncated": false,
+      "sha256": "7491f0247ab03d1a791ef96a18f0b94c528f817275ea143e2cf01f4405041937"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T04.M02",
+      "role": "assistant",
+      "chars": 134,
+      "truncated": false,
+      "sha256": "8e7c69c2271e3167396ca7830f5ef7602a176861812cf860b82ea32d95eaeaab"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T05.M01",
+      "role": "user",
+      "chars": 28,
+      "truncated": false,
+      "sha256": "d60ddc8cfc7355bacee81523c2467115f2bfca40c2b5474a902ca768195a8c13"
+    },
+    {
+      "sourceId": "C10",
+      "label": "C10.T05.M02",
+      "role": "assistant",
+      "chars": 334,
+      "truncated": false,
+      "sha256": "20b3c3f4718ff1ddaefbc25f30ef1aa490efede0280101d91b288a16b4fbe574"
+    },
+    {
+      "sourceId": "C11",
+      "label": "C11.T01.M01",
+      "role": "user",
+      "chars": 135,
+      "truncated": false,
+      "sha256": "22c11603e44f7e0c39d3e9309d0621fcd2d738607d9266da389104d30bb1bdb0"
+    },
+    {
+      "sourceId": "C11",
+      "label": "C11.T01.M02",
+      "role": "assistant",
+      "chars": 20000,
+      "truncated": true,
+      "sha256": "76cd5472168dd47a214b27dda10ffc394ca212c3392591966769ddba4f9c1a00"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T01.M01",
+      "role": "user",
+      "chars": 47,
+      "truncated": false,
+      "sha256": "a3bb372a5c35863552486e6cebd73f3b53356cedc53466cc825b3aa1c1947ac1"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T01.M02",
+      "role": "assistant",
+      "chars": 67,
+      "truncated": false,
+      "sha256": "b24b94e70c542f9f2bd61466f0a3b746b3c8d1e8dbb49568b233c70911a9904b"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T01.M03",
+      "role": "assistant",
+      "chars": 409,
+      "truncated": false,
+      "sha256": "5da7ed727ea37a87b837c69368264b6a90b48ba0226543062d12cd4caf1b222b"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M01",
+      "role": "user",
+      "chars": 72,
+      "truncated": false,
+      "sha256": "f0e559f1a39500ee08b64b1578c56fff89d7145c19722ba8b3adb6e9403c25c3"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M02",
+      "role": "assistant",
+      "chars": 122,
+      "truncated": false,
+      "sha256": "5849928672f5ac7efc9c3bf962ac2f76412e0479a590a00f5ee7d0ca9c9007c5"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M03",
+      "role": "assistant",
+      "chars": 312,
+      "truncated": false,
+      "sha256": "58077b048f6c00cad980637e6fc8c521d697232cb835dbce6603d2fba20c92f5"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M04",
+      "role": "assistant",
+      "chars": 401,
+      "truncated": false,
+      "sha256": "1bf15bc7665a6814bd3e6b11ac0ed8a1b9a1d4bc20c9a4f3973d4f1c10c703a3"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M05",
+      "role": "assistant",
+      "chars": 374,
+      "truncated": false,
+      "sha256": "1a78f4bd6e6f402abf6ddbdb88b972cb70b921600c918e41199e4414115e0101"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M06",
+      "role": "assistant",
+      "chars": 403,
+      "truncated": false,
+      "sha256": "4932c8c4f79e3cff6faaac96a2788c713e44e5cb3e093ab1ed2ff81ec115ec05"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T02.M07",
+      "role": "assistant",
+      "chars": 2481,
+      "truncated": false,
+      "sha256": "31e41ae160783e91d104f8564dde8f3c89294134aeeca30ac9fa2068ac8f03fa"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T03.M01",
+      "role": "user",
+      "chars": 131,
+      "truncated": false,
+      "sha256": "4922700a276e2ffe9ebf5d2f691fbdb60bd624d55332cbddf559ca1fe3a47679"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T03.M02",
+      "role": "assistant",
+      "chars": 301,
+      "truncated": false,
+      "sha256": "0ba9ded9242ebddd0def04d48099c3e2adbba2beb411dea49fa2d192c7cd36dc"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T03.M03",
+      "role": "assistant",
+      "chars": 14235,
+      "truncated": false,
+      "sha256": "9ce3aec8a5752318df0b3b4a956d9d28c4144310f8e7bfd8cd4e44b09f4b105a"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T04.M01",
+      "role": "user",
+      "chars": 146,
+      "truncated": false,
+      "sha256": "d018491c1cc5b0d86bf27c38e43fe9204acf33b56c3ee5b7db2cd61ece7576b9"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T04.M02",
+      "role": "assistant",
+      "chars": 153,
+      "truncated": false,
+      "sha256": "7811508d8ab6b941ead78dab2e0f7529d6b43f9ed87077ec29fc856af0dc1bc7"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T04.M03",
+      "role": "assistant",
+      "chars": 347,
+      "truncated": false,
+      "sha256": "259a80aef7bca75771f76a91be8f2aad47e4c83451347f1b12901ac7de9ff0d9"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T04.M04",
+      "role": "assistant",
+      "chars": 5169,
+      "truncated": false,
+      "sha256": "87e4ca2d9f082261952dc1bdb2c71ddae30275af1042e7676f0d75da3458ce6b"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T05.M01",
+      "role": "user",
+      "chars": 109,
+      "truncated": false,
+      "sha256": "3859740c645c35abe804c692d52883d522e0c6923a7586a8947a5c8173daa513"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T05.M02",
+      "role": "assistant",
+      "chars": 7592,
+      "truncated": false,
+      "sha256": "587864a0b5c2db500f6303d30a8e7ac8d0914e19ddc18672a766ef5a90e1a99e"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T06.M01",
+      "role": "user",
+      "chars": 3972,
+      "truncated": false,
+      "sha256": "edaa7866f254d87b429bc6bcef485c76bfd1eb8758ffdb87ae44a3517059e143"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T06.M02",
+      "role": "assistant",
+      "chars": 289,
+      "truncated": false,
+      "sha256": "da9b77c1a2c3bddb143205275c0dd9c89108eb210a935e6895f23a7481c7118c"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T06.M03",
+      "role": "assistant",
+      "chars": 391,
+      "truncated": false,
+      "sha256": "c66b04c74d0ab49d8415f97350615ad22315137fdd87ad2c195749578f805f21"
+    },
+    {
+      "sourceId": "C12",
+      "label": "C12.T06.M04",
+      "role": "assistant",
+      "chars": 9103,
+      "truncated": false,
+      "sha256": "b9ba0e9041f9c55277bf4d91218e604cd524df5f1dd2cd57e56200c5d4827434"
+    }
+  ],
+  "reference_documents": [
+    {
+      "original_path": "/Users/nicholasmino/.codex/attachments/51547ece-58e5-4fbc-a547-5c77bb96e406/Pasted text.txt",
+      "archive_path": "reference-documents/A01_original_algorithm_request.txt",
+      "original_sha256": "9cbe8bf301f1b2f429709a5e1286c49ea5f207b7fdfb2d37e28dd6d51c81e906",
+      "captured_sha256": "9cbe8bf301f1b2f429709a5e1286c49ea5f207b7fdfb2d37e28dd6d51c81e906",
+      "mtime": "2026-11-07T11:19:47.121669-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/.codex/attachments/af1ced1e-552c-463b-a1ca-957473c20e60/Pasted text.txt",
+      "archive_path": "reference-documents/A02_supplied_astra_design.txt",
+      "original_sha256": "ca39c23d988e43dac09b04288a723190f4f4da925320f02761874665668b833e",
+      "captured_sha256": "ca39c23d988e43dac09b04288a723190f4f4da925320f02761874665668b833e",
+      "mtime": "2026-11-07T11:30:36.073106-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/.codex/attachments/8742784f-61e5-42f9-bef2-90a92abdac19/Pasted text.txt",
+      "archive_path": "reference-documents/A03_execution_brief_request.txt",
+      "original_sha256": "f237613a7ab8b2df3bf98180920d7867744b573823dfad7736b936d3df0828c5",
+      "captured_sha256": "f237613a7ab8b2df3bf98180920d7867744b573823dfad7736b936d3df0828c5",
+      "mtime": "2026-11-07T12:19:19.331698-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/NOVA_PROJECT_PLAN.md",
+      "archive_path": "reference-documents/NOVA_PROJECT_PLAN.md",
+      "original_sha256": "3c43de7a46cc04bf54af7de5160fe66af3066302b9da1464f9ee22b087383ba9",
+      "captured_sha256": "3c43de7a46cc04bf54af7de5160fe66af3066302b9da1464f9ee22b087383ba9",
+      "mtime": "2026-11-07T11:38:33.383260-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/ASTRA_GOAL_PROMPT.md",
+      "archive_path": "reference-documents/ASTRA_GOAL_PROMPT.md",
+      "original_sha256": "f237613a7ab8b2df3bf98180920d7867744b573823dfad7736b936d3df0828c5",
+      "captured_sha256": "f237613a7ab8b2df3bf98180920d7867744b573823dfad7736b936d3df0828c5",
+      "mtime": "2026-11-07T12:18:40.129444-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/GHOST_USERS_CURSOR_EXECUTION_BRIEF.md",
+      "archive_path": "reference-documents/GHOST_USERS_CURSOR_EXECUTION_BRIEF.md",
+      "original_sha256": "865ef5b11ae3f689a8c5191909563133d9b0b7847c7a0ce17987b323cb94208a",
+      "captured_sha256": "865ef5b11ae3f689a8c5191909563133d9b0b7847c7a0ce17987b323cb94208a",
+      "mtime": "2026-11-07T12:40:52.659961-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/CURSOR_GOAL_PROMPT.md",
+      "archive_path": "reference-documents/CURSOR_GOAL_PROMPT.md",
+      "original_sha256": "0fad3099582f0b8cfce20a4c2e42d8e654eb4eae981198c215ed5127bceaa3b4",
+      "captured_sha256": "0fad3099582f0b8cfce20a4c2e42d8e654eb4eae981198c215ed5127bceaa3b4",
+      "mtime": "2026-11-07T12:46:49.109176-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/README.md",
+      "archive_path": "reference-documents/README.md",
+      "original_sha256": "43ab51abe9d5ce37820d638b9de1fc2cf2ed5593fafc503d66b4c108e6960360",
+      "captured_sha256": "43ab51abe9d5ce37820d638b9de1fc2cf2ed5593fafc503d66b4c108e6960360",
+      "mtime": "2026-11-07T13:16:58.439464-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/docs/contracts.md",
+      "archive_path": "reference-documents/docs__contracts.md",
+      "original_sha256": "206e84be87dfae287a33c6fa50e504145faf97ab5b47927c31fab396cb868cdb",
+      "captured_sha256": "206e84be87dfae287a33c6fa50e504145faf97ab5b47927c31fab396cb868cdb",
+      "mtime": "2026-11-07T15:08:15.499087-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/docs/continuation.md",
+      "archive_path": "reference-documents/docs__continuation.md",
+      "original_sha256": "fcf0309d6af1060e3f5c4c97dc20d8e9850d4dbb1fbc6ab9a814ec9d03676d0a",
+      "captured_sha256": "fcf0309d6af1060e3f5c4c97dc20d8e9850d4dbb1fbc6ab9a814ec9d03676d0a",
+      "mtime": "2026-11-07T15:23:42.703257-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/docs/decisions.md",
+      "archive_path": "reference-documents/docs__decisions.md",
+      "original_sha256": "fccc2f0250f7a3d2b4929a5fed6e58b24433723f101be11077f39121faa81c6f",
+      "captured_sha256": "fccc2f0250f7a3d2b4929a5fed6e58b24433723f101be11077f39121faa81c6f",
+      "mtime": "2026-11-07T13:04:48.746680-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/docs/ui.md",
+      "archive_path": "reference-documents/docs__ui.md",
+      "original_sha256": "cea0af99ad91a3c6286950dd94099f640262a5ef3e256d4be7f4e266a4b7cbd0",
+      "captured_sha256": "cea0af99ad91a3c6286950dd94099f640262a5ef3e256d4be7f4e266a4b7cbd0",
+      "mtime": "2026-11-07T13:04:51.161592-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/ops/STATE.json",
+      "archive_path": "reference-documents/ops__STATE.json",
+      "original_sha256": "b227011afc39197df020c3ce13df4e6957d209367c4272e26a114bbb69c01a6a",
+      "captured_sha256": "b227011afc39197df020c3ce13df4e6957d209367c4272e26a114bbb69c01a6a",
+      "mtime": "2026-11-07T15:23:44.169760-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/ops/TASKS.json",
+      "archive_path": "reference-documents/ops__TASKS.json",
+      "original_sha256": "9fed922eac34702704b306b028c24d4823c03e95e49c2e8ae40781169cd4ae63",
+      "captured_sha256": "9fed922eac34702704b306b028c24d4823c03e95e49c2e8ae40781169cd4ae63",
+      "mtime": "2026-11-07T13:54:43.808755-05:00",
+      "redacted": false,
+      "status": "historical live-root or supplied reference; not proof of completion"
+    },
+    {
+      "original_path": "/var/folders/vc/29br77r51mzfqm_7_w4bpctr0000gn/T/ghost-users-figma-z4ksdee0/632ce79bb0e12e366ca7cc325ac84be8c44637cc.png",
+      "archive_path": "assets/C12_Figma_design.png",
+      "captured_sha256": "1b1ed35d9074b42df9c5cbd03a4c6d183ba4494f9362add8ef7410f3724c71fb",
+      "status": "Historical Figma preview shared in C12. This is a design reference; its illustrative counters are not measured investigation results."
+    },
+    {
+      "original_path": "/var/folders/vc/29br77r51mzfqm_7_w4bpctr0000gn/T/ghost-users-audit-34mmgmst/evidence/run_22109210ab2647fa/ev_6db471a4fcea4c12.jpg",
+      "archive_path": "assets/C12_browser_test.jpg",
+      "captured_sha256": "74a379cb6a550e0fd9bb1f8c728235eafb58086bf14e34397271d22b075e2720",
+      "status": "Historical browser image from the earlier search-and-drag test in C12. It is a different fixture attempt from the later three-item shopper investigations."
+    },
+    {
+      "original_path": "/Users/nicholasmino/ProgrammingFiles/Hackathons/NOVA2026/release-index.json",
+      "archive_path": "reference-documents/release-labels.json",
+      "status": "labels, stage, status, and selected label only; no frozen package opened"
+    }
+  ]
+}
