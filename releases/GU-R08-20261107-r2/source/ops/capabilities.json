@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-11-07T12:47:37-05:00",
+  "pythonSelected": "3.12",
+  "pythonDefault": "3.14.7",
+  "node": "v25.8.0",
+  "npm": "11.20.0",
+  "git": "2.53.0",
+  "platform": "darwin-arm64",
+  "memoryGb": 48,
+  "diskAvailGiB": 70,
+  "portsFreeAtStart": [8787, 8788, 5173],
+  "playwrightPython": "1.64.1",
+  "playwrightChromium": "156.0.8078.4",
+  "openrouterKeyPresent": true,
+  "openrouterCompletionVerified": true,
+  "openrouterModelObserved": "anthropic/claude-sonnet-4.6",
+  "openrouterImageVerified": false,
+  "plannerImages": false,
+  "qwen": {"port": 18092, "listening": false, "startedByTask": false},
+  "figma": {"status": "unverified", "fallback": "docs/ui.md"},
+  "cursorModelsRequested": {"coordinator": "grok-4.7", "ui": "composer-2.5", "fast": false},
+  "cursorChildIdentity": "unknown until a child task reports it"
+}

@@ -1,0 +1,56 @@
+{
+  "selected": "GU-R01-20261107-r4",
+  "releases": [
+    {
+      "id": "GU-R01-20261107-r1",
+      "stage": "R01",
+      "status": "failed",
+      "path": null,
+      "reason": "Packager scan matched the redaction literal before validation. Not a frozen release."
+    },
+    {
+      "id": "GU-R01-20261107-r2",
+      "stage": "R01",
+      "status": "failed",
+      "path": null,
+      "reason": "Validation did not finish because the previous server still held port 8787. Not a frozen release."
+    },
+    {
+      "id": "GU-R01-20261107-r3",
+      "stage": "R01",
+      "status": "failed",
+      "path": null,
+      "reason": "Playback validation returned 404 because the copied database omitted the SQLite WAL. Not a frozen release."
+    },
+    {
+      "id": "GU-R01-20261107-r4",
+      "stage": "R01",
+      "status": "frozen",
+      "path": "releases/GU-R01-20261107-r4",
+      "manifest_sha256": "d69aef5bdcb0c735398f50d58c0585ca474b4932f015e33784aa027db97d1a59",
+      "source_revision": "af5a9bca1902c0c26900a3a5c0f9cafa8cf28009",
+      "created_at": "2026-11-07T13:32:04.321369-05:00",
+      "video": "not_recorded_in_build_package"
+    },
+    {
+      "id": "GU-R08-20261107-r1",
+      "stage": "R08",
+      "status": "snapshot",
+      "path": "releases/GU-R08-20261107-r1",
+      "source_revision": "9c6fb4735de40c90ff68b86d71f1908a76f394ce",
+      "created_at": "2026-11-07T14:25:00-05:00",
+      "video": "not_recorded",
+      "note": "Runnable source snapshot. Clean-room install was not repeated. GU-R01-20261107-r4 stays the frozen package."
+    },
+    {
+      "id": "GU-R08-20261107-r2",
+      "stage": "R08",
+      "status": "snapshot",
+      "path": "releases/GU-R08-20261107-r2",
+      "source_revision": "c8ab5a3d4d6d801c21960689080fcffb1d1ad621",
+      "created_at": "2026-11-07T14:06:00-05:00",
+      "video": "not_recorded",
+      "note": "Runnable snapshot of R02 through R08. Clean-room install was not repeated. GU-R01-20261107-r4 stays the frozen package."
+    }
+  ]
+}
