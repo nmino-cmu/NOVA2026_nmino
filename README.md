@@ -4,6 +4,15 @@ Ghost Users investigates a browser task with a local browser, keeps the witnesse
 
 Orbit Supply is a controlled demo shop, not a customer deployment. The task is to reach checkout with exactly one Nova Mug and not place an order. A success-looking Express screen is not treated as success unless the registered cart check passes.
 
+## Live demo
+
+Try the public build without cloning this repository:
+
+1. Open **https://nickmino.com/nova2026** (the same app also answers at `/NOVA2026` and `/Nova2026` on that host).
+2. Enter any public `http://` or `https://` page URL and start an investigation.
+
+That site runs a live Ghost Users backend against the link you supply. It is not a canned recording or a fixed shop preset. For the Orbit Supply controlled checkout task and full local development, use the steps below.
+
 ## Run locally
 
 ```bash
