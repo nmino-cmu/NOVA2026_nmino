@@ -123,6 +123,8 @@ def start() -> int:
     env["GHOST_PORT"] = str(ghost_port)
     py = sys.executable
     _spawn("orbit", [py, "-m", "uvicorn", "fixtures.orbit.app:app", "--host", "127.0.0.1", "--port", str(orbit_port)], env, data)
+    _spawn("harbor", [py, "-m", "uvicorn", "fixtures.harbor.app:app", "--host", "127.0.0.1", "--port", "8789"], env, data)
+    _spawn("echo", [py, "-m", "uvicorn", "fixtures.echo_model:app", "--host", "127.0.0.1", "--port", "8791"], env, data)
     _spawn("ghost", [py, "-m", "uvicorn", "ghost.api:app", "--app-dir", str(ROOT / "backend"), "--host", "127.0.0.1", "--port", str(ghost_port)], env, data)
     orbit_ok = _wait(f"http://127.0.0.1:{orbit_port}/health")
     ghost_ok = _wait(f"http://127.0.0.1:{ghost_port}/api/health")
@@ -131,6 +133,8 @@ def start() -> int:
         stop()
         return 1
     print(f"Orbit Supply  http://127.0.0.1:{orbit_port}/")
+    print("Harbor Goods  http://127.0.0.1:8789/")
+    print("Echo model    http://127.0.0.1:8791/v1/models")
     print(f"Ghost Users   http://127.0.0.1:{ghost_port}/")
     print("UI dev server http://127.0.0.1:5173/  (npm run dev inside frontend)")
     return 0
@@ -138,7 +142,12 @@ def start() -> int:
 
 def stop() -> int:
     data = _data()
-    for name, marker in (("ghost", "ghost.api:app"), ("orbit", "fixtures.orbit.app:app")):
+    for name, marker in (
+        ("ghost", "ghost.api:app"),
+        ("orbit", "fixtures.orbit.app:app"),
+        ("harbor", "fixtures.harbor.app:app"),
+        ("echo", "fixtures.echo_model:app"),
+    ):
         pid_path = _pid_dir(data) / f"{name}.pid"
         if not pid_path.exists():
             continue

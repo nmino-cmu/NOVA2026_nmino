@@ -28,6 +28,20 @@ async def orbit_reset(origin: str, token: str, namespace: str) -> dict:
     return data
 
 
+async def orbit_set_build(origin: str, token: str, build: str) -> dict:
+    if not token:
+        return {"ok": False, "detail": "Orbit control token is missing."}
+    async with httpx.AsyncClient(timeout=10) as client:
+        response = await client.post(
+            f"{origin}/control/build",
+            headers={"X-Orbit-Control": token},
+            json={"build": build},
+        )
+    if response.status_code != 200:
+        return {"ok": False, "detail": "The fixture rejected the build change."}
+    return response.json()
+
+
 async def orbit_state(origin: str, token: str, namespace: str) -> dict:
     async with httpx.AsyncClient(timeout=10) as client:
         response = await client.get(

@@ -1,9 +1,13 @@
 {
   "tasks": [
-    {"id": "contract-v1", "status": "done", "owner": "coordinator"},
-    {"id": "fixture-orbit", "status": "done", "owner": "coordinator"},
-    {"id": "engine-r01", "status": "done", "owner": "coordinator"},
-    {"id": "ui-r01", "status": "done", "owner": "ui"},
-    {"id": "package-r01", "status": "done", "owner": "coordinator", "release": "GU-R01-20261107-r4"}
+    {"id": "r01", "status": "done", "release": "GU-R01-20261107-r4"},
+    {"id": "ui-pass", "status": "done"},
+    {"id": "r02-adaptive", "status": "done"},
+    {"id": "r03-retest", "status": "done", "run": "run_5acca512515c41a2"},
+    {"id": "r05-harbor", "status": "done"},
+    {"id": "r06-provider", "status": "done"},
+    {"id": "r07-keyboard", "status": "done"},
+    {"id": "r08-workers", "status": "done"},
+    {"id": "full-snapshot", "status": "in_progress"}
   ]
 }

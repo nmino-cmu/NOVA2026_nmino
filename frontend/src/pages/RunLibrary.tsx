@@ -9,6 +9,7 @@ export function RunLibrary() {
   const [error, setError] = useState<string | null>(null);
   const [fixtureMsg, setFixtureMsg] = useState<string | null>(null);
   const [fixtureLoading, setFixtureLoading] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     void listRuns()
@@ -48,8 +49,15 @@ export function RunLibrary() {
       )}
 
       {runs && runs.length > 0 && (
+        <div className="field">
+          <label htmlFor="run-search">Search runs</label>
+          <input id="run-search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Run id, label, or status" />
+        </div>
+      )}
+
+      {runs && runs.length > 0 && (
         <ul className="run-list">
-          {runs.map((run) => (
+          {runs.filter((run) => `${run.label ?? ""} ${run.id} ${run.status ?? ""}`.toLowerCase().includes(query.toLowerCase())).map((run) => (
             <li key={run.id}>
               <Link to={`/runs/${run.id}`}>
                 <div style={{ fontWeight: 500 }}>{run.label ?? run.id}</div>
@@ -96,6 +104,24 @@ export function RunLibrary() {
             onClick={() => void runFixture("express")}
           >
             Express
+          </button>
+          <button
+            type="button"
+            className="btn"
+            disabled={fixtureLoading}
+            onClick={() => {
+              setFixtureLoading(true);
+              void fetch("/api/keyboard-checks", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+                .then(async (response) => {
+                  if (!response.ok) throw new Error(await response.text());
+                  return response.json();
+                })
+                .then((body) => navigate(`/runs/${body.id}`))
+                .catch((exc) => setFixtureMsg(exc instanceof Error ? exc.message : "Keyboard check failed"))
+                .finally(() => setFixtureLoading(false));
+            }}
+          >
+            Keyboard
           </button>
         </div>
       </section>

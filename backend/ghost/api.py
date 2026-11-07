@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import re
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -14,12 +15,19 @@ from playwright.async_api import async_playwright
 
 from ghost.accounting.ledger import Ledger
 from ghost.config import Settings
+from ghost.engine.adaptive import run_adaptive
+from ghost.engine.compare import harbor_checkout
+from ghost.engine.keyboard import run_keyboard
 from ghost.engine.policies import ModelChooser
+from ghost.engine.restore import orbit_set_build
 from ghost.engine.runner import execute_run
 from ghost.engine.verifier import verify_route
+from fixtures.orbit.checks import EXPRESS
 from ghost.providers import openrouter as provider
+from ghost.providers.compatible import complete as compatible_complete
 from ghost.registry import EVALUATORS, build_task
-from ghost.regressions import POLICIES, scripted_for
+from ghost.regressions import POLICIES, Scripted, scripted_for
+from ghost.review import brief_markdown, fingerprint, recommendation_for
 from ghost.store.projections import playback, snapshot
 from ghost.store.sqlite import Store
 
@@ -62,6 +70,13 @@ async def _job(app: FastAPI, run_id: str) -> None:
             return
         task = store.get_task(run["taskId"])
 
+        if run["policyId"] == "adaptive-v1":
+            await run_adaptive(settings, store, app.state.browser, run_id)
+            return
+        if run["policyId"] == "keyboard.confirm.v1":
+            await run_keyboard(settings, store, app.state.browser, run_id)
+            return
+
         def factory(ledger: Ledger):
             if run["policyId"] == "ordinary-model-v1":
                 return ModelChooser(settings, store, ledger, run_id, task)
@@ -77,7 +92,7 @@ async def lifespan(app: FastAPI):
     store = Store(settings.data_dir)
     store.recover()
     app.state.store = store
-    app.state.lease = asyncio.Lock()
+    app.state.lease = asyncio.Semaphore(2)
     playwright = await async_playwright().start()
     app.state.playwright = playwright
     app.state.browser = await playwright.chromium.launch(headless=True)
@@ -104,8 +119,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "investigation": True,
                 "playback": True,
                 "fixtureChecks": True,
-                "adaptive": False,
-                "recommendations": False,
+                "adaptive": True,
+                "recommendations": True,
+                "comparison": True,
+                "provider": True,
+                "keyboard": True,
+                "workers": 2,
             },
             "provider": {"configured": _configured(), "model": settings.model, "verified": False},
             "fixture": {
@@ -296,6 +315,86 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         observed = next((item.get("modelObserved") for item in result.attempts if item.get("modelObserved")), None)
         return {"ok": result.ok, "modelObserved": observed, "error": None if result.ok else "The provider test did not return valid data."}
 
+    @app.post("/api/recommendations")
+    def recommend(body: dict):
+        run_id = body.get("runId") or ""
+        try:
+            run = app.state.store.get_run(run_id)
+        except KeyError:
+            raise HTTPException(404, "Run not found.") from None
+        failed = [item for item in app.state.store.records(run_id, "verification") if item.get("status") == "failed"]
+        if not failed:
+            raise HTTPException(400, "A recommendation needs a failed verification.")
+        evidence_ids = [item["id"] for item in app.state.store.evidence_list(run_id)]
+        recommendation = recommendation_for(failed[-1], evidence_ids)
+        recommendation["runId"] = run_id
+        recommendation["buildId"] = run.get("buildId")
+        app.state.store.apply(run_id, records=[("recommendation", recommendation["id"], recommendation)], event_type="finding_recorded", entity_id=recommendation["id"], summary="Recorded an evidence-linked recommendation")
+        return recommendation
+
+    @app.post("/api/briefs")
+    def export_brief(body: dict):
+        run_id = body.get("runId") or ""
+        recommendation_id = body.get("recommendationId") or ""
+        try:
+            recommendation = app.state.store.find("recommendation", recommendation_id)
+        except KeyError:
+            raise HTTPException(404, "Recommendation not found.") from None
+        if recommendation.get("runId") != run_id:
+            raise HTTPException(400, "That recommendation is not part of this run.")
+        markdown = brief_markdown(recommendation, recommendation.get("buildId") or "unknown")
+        saved = app.state.store.save_evidence(run_id, "brief", markdown.encode(), "text/markdown", "Implementation brief")
+        return {"evidenceId": saved["id"], "markdown": markdown}
+
+    @app.post("/api/retests")
+    async def retest(body: dict):
+        if body.get("build") != "orbit-fixed-v1":
+            raise HTTPException(400, "Name the changed build. This retest only accepts orbit-fixed-v1.")
+        task = app.state.store.create_task(build_task({"mode": "orbit"}, orbit_origin=settings.orbit_origin, model=settings.model))
+        run = app.state.store.create_run(task_id=task["id"], policy_id="regression.express.v1", idempotency_key=body.get("idempotencyKey") or task["id"], discovery=False, label="Express retest")
+        before = body.get("beforeRunId")
+        asyncio.create_task(_retest(app, run["id"], before))
+        return {"id": run["id"], "status": "queued", "build": "orbit-fixed-v1"}
+
+    @app.post("/api/comparisons")
+    async def compare():
+        harbor = os.environ.get("HARBOR_ORIGIN", "http://127.0.0.1:8789")
+        result = await harbor_checkout(app.state.browser, harbor)
+        return {
+            "harbor": result,
+            "orbitShortcutInteractions": 3,
+            "comparable": result.get("status") == "passed",
+            "reason": "Both tasks start logged out and ask for checkout with one Nova Mug. The routes are measured separately." if result.get("status") == "passed" else result.get("detail"),
+        }
+
+    @app.post("/api/provider/test")
+    async def provider_compatible(body: dict):
+        base = (body.get("baseUrl") or "").strip()
+        model_name = (body.get("model") or "echo-local").strip()
+        key = os.environ.get("OPENROUTER_API_KEY", "")
+        return await compatible_complete(base, model_name, key)
+
+    @app.get("/demo/keyboard")
+    def keyboard_page():
+        from fastapi.responses import HTMLResponse
+
+        from ghost.engine.keyboard import PAGE
+
+        return HTMLResponse(PAGE)
+
+    @app.post("/api/keyboard-checks")
+    def keyboard_check(body: dict):
+        task = app.state.store.create_task(
+            build_task(
+                {"mode": "supplied", "url": "http://127.0.0.1:8787/demo/keyboard", "targetName": "Desk confirmed", "restoration": "fresh_context", "objective": "Confirm the desk with the keyboard."},
+                orbit_origin=settings.orbit_origin,
+                model=settings.model,
+            )
+        )
+        run = app.state.store.create_run(task_id=task["id"], policy_id="keyboard.confirm.v1", idempotency_key=body.get("idempotencyKey") or task["id"], discovery=False, label="Keyboard check")
+        asyncio.create_task(_job(app, run["id"]))
+        return {"id": run["id"], "status": run["status"]}
+
     dist = settings.repo_root / "frontend" / "dist"
     index = dist / "index.html"
     if index.is_file():
@@ -353,6 +452,36 @@ async def _rerun(app: FastAPI, route: dict) -> None:
             summary=f"Replay {result['status']}",
             extra={"status": result["status"]},
         )
+
+
+async def _retest(app: FastAPI, run_id: str, before_run_id: str | None) -> None:
+    settings: Settings = app.state.settings
+    store: Store = app.state.store
+    async with app.state.lease:
+        switched = await orbit_set_build(settings.orbit_origin, settings.control_token, "orbit-fixed-v1")
+        if not switched.get("ok"):
+            store.finish(run_id, status="error", stopReason="infrastructure_failure", error="Could not select the fixed fixture build.")
+            return
+        try:
+            await execute_run(settings, store, app.state.browser, run_id, lambda ledger: Scripted(EXPRESS))
+            current = snapshot(store, run_id)
+            best = current["projection"]["bestVerified"]
+            task = store.get_task(store.get_run(run_id)["taskId"])
+            action_hash = "" if not best else best["actionSequenceHash"]
+            record = {
+                "id": run_id,
+                "beforeRunId": before_run_id,
+                "afterRunId": run_id,
+                "beforeBuild": "orbit-buggy-v1",
+                "afterBuild": current.get("buildId"),
+                "fingerprint": fingerprint(task, action_hash),
+                "status": current["status"],
+                "interactions": None if not best else best["interactions"],
+                "comparable": True,
+            }
+            store.apply(run_id, records=[("retest", run_id, record)], event_type="finding_recorded", entity_id=run_id, summary="Recorded the Express retest")
+        finally:
+            await orbit_set_build(settings.orbit_origin, settings.control_token, "orbit-buggy-v1")
 
 
 app = create_app()

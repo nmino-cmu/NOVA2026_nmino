@@ -16,7 +16,7 @@
   --radius: 12px;
   --space: 8px;
   --control-min-h: 40px;
-  --nav-width: 200px;
+  --nav-width: 228px;
   --inspector-width: 340px;
 }
 
@@ -35,10 +35,13 @@ body,
 
 body {
   font-family: Inter, system-ui, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.5;
   color: var(--text);
-  background: var(--canvas);
+  background:
+    radial-gradient(1100px 480px at 0% -10%, rgba(101, 217, 245, 0.09), transparent 55%),
+    radial-gradient(800px 420px at 100% 0%, rgba(94, 224, 160, 0.05), transparent 50%),
+    var(--canvas);
 }
 
 .tabular {
@@ -109,8 +112,26 @@ textarea:focus-visible {
 
 .nav-rail .brand {
   font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: 18px;
   color: var(--text);
-  margin-bottom: var(--space);
+  margin-bottom: 4px;
+}
+
+.nav-kicker {
+  color: var(--secondary);
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.nav-rail a {
+  gap: 10px;
+}
+
+.nav-rail a.active {
+  background: linear-gradient(180deg, rgba(101, 217, 245, 0.16), rgba(101, 217, 245, 0.05));
+  box-shadow: inset 0 0 0 1px rgba(101, 217, 245, 0.35);
+  color: var(--text);
 }
 
 .main-column {
@@ -138,8 +159,38 @@ textarea:focus-visible {
 
 .page-body {
   flex: 1;
-  padding: calc(var(--space) * 2);
+  padding: calc(var(--space) * 3);
   overflow: auto;
+}
+
+.setup-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.setup-aside {
+  position: sticky;
+  top: 16px;
+}
+
+.setup-aside ol {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--secondary);
+}
+
+@media (min-width: 1101px) {
+  .top-strip {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .setup-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .menu-btn {
@@ -184,10 +235,11 @@ textarea:focus-visible {
 }
 
 .card {
-  background: var(--panel);
+  background: linear-gradient(180deg, rgba(28, 39, 64, 0.96), rgba(20, 28, 47, 0.96));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: calc(var(--space) * 2);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
 }
 
 .card h3 {
@@ -211,8 +263,9 @@ textarea:focus-visible {
 }
 
 .summary-value {
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   font-weight: 600;
+  letter-spacing: -0.03em;
 }
 
 .summary-empty {
@@ -566,13 +619,23 @@ textarea:focus-visible {
 }
 
 .graph-node {
-  padding: var(--space) calc(var(--space) * 1.5);
-  border-radius: var(--radius);
-  border: 2px solid var(--border);
-  background: var(--raised);
-  min-width: 80px;
-  text-align: center;
-  font-size: 0.875rem;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #121a2e;
+  min-width: 132px;
+  text-align: left;
+  font-size: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.graph-node small {
+  display: block;
+  color: var(--secondary);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
 }
 
 .graph-node--verified {

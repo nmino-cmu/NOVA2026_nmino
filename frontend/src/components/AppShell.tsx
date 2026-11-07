@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { GitCompare, Library, Menu, Plus, ScanSearch, Server, X } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
@@ -14,11 +14,21 @@ export function AppShell() {
       />
       <nav className={`nav-rail ${navOpen ? "open" : ""}`} aria-label="Main">
         <div className="brand">Ghost Users</div>
+        <div className="nav-kicker">Inspect and replay</div>
         <NavLink to="/" end onClick={() => setNavOpen(false)}>
-          New investigation
+          <Plus size={16} /> New investigation
         </NavLink>
         <NavLink to="/runs" onClick={() => setNavOpen(false)}>
-          Run library
+          <Library size={16} /> Run library
+        </NavLink>
+        <NavLink to="/review" onClick={() => setNavOpen(false)}>
+          <ScanSearch size={16} /> Review
+        </NavLink>
+        <NavLink to="/compare" onClick={() => setNavOpen(false)}>
+          <GitCompare size={16} /> Comparison
+        </NavLink>
+        <NavLink to="/provider" onClick={() => setNavOpen(false)}>
+          <Server size={16} /> Provider
         </NavLink>
       </nav>
       <div className="main-column">

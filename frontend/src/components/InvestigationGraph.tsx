@@ -18,7 +18,12 @@ function statusClass(status: NodeStatus): string {
 }
 
 function GraphNodeView({ data }: { data: { label: string; status: NodeStatus } }) {
-  return <div className={statusClass(data.status)}>{data.label}</div>;
+  return (
+    <div className={statusClass(data.status)}>
+      <small>{data.status}</small>
+      {data.label}
+    </div>
+  );
 }
 
 const nodeTypes = { investigation: GraphNodeView };

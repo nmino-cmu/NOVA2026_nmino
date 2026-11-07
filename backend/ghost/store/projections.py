@@ -65,8 +65,8 @@ def snapshot(store: Store, run_id: str) -> dict:
             {
                 "id": item["id"],
                 "label": item.get("label") or "Step",
-                "x": 48 + int(item.get("depth") or 0) * 230,
-                "y": 90,
+                "x": 48 + int(item.get("depth") or 0) * 196,
+                "y": 48 + int(item.get("lane") or 0) * 92,
                 "status": status,
                 "seq": item.get("seq") or 0,
             }

@@ -1,35 +1,15 @@
 {
-  "recordedAt": "2026-11-07T13:36:00-05:00",
-  "recordedAtUtc": "2026-11-07T18:36:00+00:00",
+  "recordedAt": "2026-11-07T14:20:00-05:00",
+  "recordedAtUtc": "2026-11-07T19:20:00+00:00",
   "deadline": "2026-11-07T17:00:00-05:00",
-  "minutesRemainingAtRecord": 204,
-  "activeStage": "R01",
+  "activeStage": "R08",
   "contract": "v1",
-  "integratedRevision": "af5a9bca1902c0c26900a3a5c0f9cafa8cf28009",
   "selectedRelease": "GU-R01-20261107-r4",
-  "selectedPath": "releases/GU-R01-20261107-r4",
-  "optionalStageCutoff": "2026-11-07T15:00:00-05:00",
-  "sourceFreezeCutoff": "2026-11-07T15:25:00-05:00",
-  "packageCutoff": "2026-11-07T15:45:00-05:00",
-  "owners": {
-    "coordinator": "lead",
-    "engine": "lead",
-    "fixture": "lead",
-    "ui": "composer-2.5",
-    "verifier": "lead"
-  },
-  "ports": {"ghost": 8787, "orbit": 8788, "vite": 5173},
-  "leases": {},
-  "nextDependency": "R02 only if its full cycle finishes before 15:25",
-  "failingChecks": [],
-  "latestOutcome": "R01 frozen as GU-R01-20261107-r4. Clean start and credential-free playback passed in a relocated copy.",
+  "latestOutcome": "Adaptive search, Express retest, Harbor comparison, echo endpoint, and keyboard check passed. Fuller snapshot pending.",
   "evidenceRuns": {
-    "ordinaryRegression": "run_b1a8b04516204ce7",
-    "expressRegression": "run_f14d218e9d8c4dff",
     "liveModel": "run_c6252c9a4a6e4ba2",
-    "stopped": "run_38c72d89d7c34524"
+    "expressRetestFixed": "run_5acca512515c41a2"
   },
-  "qwen": "not_listening_on_18092_not_started",
-  "figma": "unavailable_local_deck",
-  "video": "not_recorded_in_build_package"
+  "figma": "https://www.figma.com/design/oOKPP6MLABXrftwmmLdG1Z",
+  "video": "not_recorded"
 }

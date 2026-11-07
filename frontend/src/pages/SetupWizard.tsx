@@ -32,6 +32,7 @@ export function SetupWizard() {
   const [error, setError] = useState<string | null>(null);
 
   const [targetKind, setTargetKind] = useState<"orbit" | "supplied" | null>(null);
+  const [policyId, setPolicyId] = useState("adaptive-v1");
   const [url, setUrl] = useState("");
   const [targetName, setTargetName] = useState("");
   const [restoration, setRestoration] = useState<"fresh_context" | "unknown">("fresh_context");
@@ -116,7 +117,7 @@ export function SetupWizard() {
       const run = await createRun({
         taskId: created.id,
         taskVersion: created.version,
-        policyId: "ordinary-model-v1",
+        policyId: targetKind === "orbit" ? policyId : "ordinary-model-v1",
         idempotencyKey: newIdempotencyKey(),
       });
       navigate(`/runs/${run.id}`);
@@ -128,7 +129,8 @@ export function SetupWizard() {
   }
 
   return (
-    <div>
+    <div className="setup-layout">
+      <div>
       <h1 style={{ marginTop: 0 }}>New investigation</h1>
       <div className="wizard-steps" role="tablist" aria-label="Setup steps">
         {STEP_TITLES.map((title, i) => (
@@ -293,6 +295,15 @@ export function SetupWizard() {
             <dt style={{ color: "var(--secondary)" }}>Acceptable interactions</dt>
             <dd className="tabular">{acceptableInteractions}</dd>
           </dl>
+          {targetKind === "orbit" && (
+            <div className="field" style={{ marginTop: 16 }}>
+              <label htmlFor="policy">Search</label>
+              <select id="policy" value={policyId} onChange={(e) => setPolicyId(e.target.value)}>
+                <option value="adaptive-v1">Look for a shorter verified route</option>
+                <option value="ordinary-model-v1">One model-guided pass</option>
+              </select>
+            </div>
+          )}
           <div className="wizard-actions">
             <button type="button" className="btn" onClick={() => setStep(2)}>
               Back
@@ -303,6 +314,17 @@ export function SetupWizard() {
           </div>
         </section>
       )}
+      </div>
+      <aside className="card setup-aside">
+        <h2 style={{ marginTop: 0, fontSize: 18 }}>What this run checks</h2>
+        <p style={{ color: "var(--secondary)" }}>{objective || "Choose a target to see the task."}</p>
+        <ol>
+          <li>Logged out, empty cart, home visible</li>
+          <li>No order is placed</li>
+          <li>Checkout is enabled with exactly one Nova Mug</li>
+        </ol>
+        <p className="tabular" style={{ color: "var(--secondary)" }}>Route budget {budget.routeActions} · {budget.requests} model requests</p>
+      </aside>
     </div>
   );
 }

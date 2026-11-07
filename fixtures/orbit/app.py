@@ -133,7 +133,7 @@ def _hash(payload: dict) -> str:
 
 
 def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
-    fixed = build == "orbit-fixed-v1"
+    identity = {"build": build}
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
@@ -192,7 +192,7 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
         ]
         cart = [{"sku": row["sku"], "qty": row["qty"]} for row in rows]
         state = {
-            "build": build,
+            "build": identity["build"],
             "dataset": DATASET,
             "namespace": ns,
             "generation": meta["generation"] if meta else 0,
@@ -205,7 +205,7 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
         }
         state["initialStateHash"] = _hash(
             {
-                "build": build,
+                "build": identity["build"],
                 "dataset": DATASET,
                 "loggedIn": state["loggedIn"],
                 "orders": state["orders"],
@@ -312,7 +312,7 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
 </div>
 <script>{script}</script>
 </body></html>"""
-        return HTMLResponse(html, headers={"Cache-Control": "no-store", "X-Orbit-Build": build})
+        return HTMLResponse(html, headers={"Cache-Control": "no-store", "X-Orbit-Build": identity["build"]})
 
     app = FastAPI()
 
@@ -320,17 +320,17 @@ def create_app(*, db_path: Path, token: str, build: str) -> FastAPI:
     async def no_store(request: Request, call_next):
         response = await call_next(request)
         response.headers["Cache-Control"] = "no-store"
-        response.headers["X-Orbit-Build"] = build
+        response.headers["X-Orbit-Build"] = identity["build"]
         return response
 
     @app.get("/health")
     def health():
-        return {"ok": True, "service": "orbit-supply", "build": build, "dataset": DATASET}
+        return {"ok": True, "service": "orbit-supply", "build": identity["build"], "dataset": DATASET}
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request):
         state = read_state(ns_of(request))
-        awaits = "true" if fixed else "false"
+        awaits = "true" if identity["build"] == "orbit-fixed-v1" else "false"
         body = """
 <nav aria-label="Shop">
   <a href="/catalog">Catalog</a>
@@ -509,6 +509,17 @@ document.getElementById("show").addEventListener("click", () => {
         if not authorized(request):
             return JSONResponse({"error": "not found"}, status_code=404)
         return read_state(ns_of(request))
+
+    @app.post("/control/build")
+    async def control_build(request: Request):
+        if not authorized(request):
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        chosen = str(body.get("build") or "")
+        if chosen not in {"orbit-buggy-v1", "orbit-fixed-v1"}:
+            return JSONResponse({"ok": False, "detail": "Unknown build."}, status_code=400)
+        identity["build"] = chosen
+        return {"ok": True, "build": identity["build"]}
 
     app.state.orbit_read = read_state
     app.state.orbit_add = add_sku
