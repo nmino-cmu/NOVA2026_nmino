@@ -20,3 +20,8 @@ build/
 .idea/
 .vscode/
 *.swp
+
+# Ghost Users local runtime (releases/ stays tracked)
+.data/
+*.sqlite3
+*.sqlite3-*

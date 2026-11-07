@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "id": "contract-v1",
+      "status": "done",
+      "owner": "coordinator",
+      "paths": ["docs/contracts.md", "docs/decisions.md", "ops/STATE.json"]
+    },
+    {
+      "id": "fixture-orbit",
+      "status": "in_progress",
+      "owner": "coordinator",
+      "paths": ["fixtures/orbit/"]
+    },
+    {
+      "id": "engine-r01",
+      "status": "in_progress",
+      "owner": "coordinator",
+      "paths": ["backend/ghost/"]
+    },
+    {
+      "id": "ui-r01",
+      "status": "in_progress",
+      "owner": "ui",
+      "paths": ["frontend/"]
+    }
+  ]
+}

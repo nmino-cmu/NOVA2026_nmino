@@ -1,0 +1,15 @@
+#!/bin/sh
+# Search live Ghost Users source only. Never walks releases/.
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
+dirs=""
+for d in backend fixtures frontend tests docs prompts scripts contracts evaluation packaging demo presentation ops; do
+  if [ -d "$ROOT/$d" ]; then
+    dirs="$dirs $ROOT/$d"
+  fi
+done
+if [ -z "$dirs" ]; then
+  echo "live-search: no live roots" >&2
+  exit 1
+fi
+exec rg "$@" $dirs

@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+Follow AGENTS.md and the coordinator's scoped ownership assignments.
+Never read, scan, search, index, import, build against, or copy code from frozen
+releases. Read release-index.json only for labels/status. Search explicit live
+source roots. The release packager may validate only the newly created candidate
+assigned in its current validation session. Recording access requires the user
+explicitly selecting that exact release. OpenRouter is non-code inference only.
