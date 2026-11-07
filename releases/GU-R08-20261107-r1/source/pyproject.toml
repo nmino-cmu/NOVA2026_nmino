@@ -1,0 +1,23 @@
+[project]
+name = "ghost-users"
+version = "0.1.0"
+description = "Ghost Users: browser investigations you can inspect and replay"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic>=2",
+  "playwright",
+  "httpx",
+  "pytest",
+  "pytest-asyncio",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = [".", "backend"]
+markers = ["live: calls the configured OpenRouter model"]

@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-11-07T14:20:00-05:00",
+  "recordedAtUtc": "2026-11-07T19:20:00+00:00",
+  "deadline": "2026-11-07T17:00:00-05:00",
+  "activeStage": "R08",
+  "contract": "v1",
+  "selectedRelease": "GU-R01-20261107-r4",
+  "latestOutcome": "Adaptive search, Express retest, Harbor comparison, echo endpoint, and keyboard check passed. Fuller snapshot pending.",
+  "evidenceRuns": {
+    "liveModel": "run_c6252c9a4a6e4ba2",
+    "expressRetestFixed": "run_5acca512515c41a2"
+  },
+  "figma": "https://www.figma.com/design/oOKPP6MLABXrftwmmLdG1Z",
+  "video": "not_recorded"
+}

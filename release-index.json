@@ -31,6 +31,16 @@
       "source_revision": "af5a9bca1902c0c26900a3a5c0f9cafa8cf28009",
       "created_at": "2026-11-07T13:32:04.321369-05:00",
       "video": "not_recorded_in_build_package"
+    },
+    {
+      "id": "GU-R08-20261107-r1",
+      "stage": "R08",
+      "status": "snapshot",
+      "path": "releases/GU-R08-20261107-r1",
+      "source_revision": "9c6fb4735de40c90ff68b86d71f1908a76f394ce",
+      "created_at": "2026-11-07T14:25:00-05:00",
+      "video": "not_recorded",
+      "note": "Runnable source snapshot. Clean-room install was not repeated. GU-R01-20261107-r4 stays the frozen package."
     }
   ]
 }

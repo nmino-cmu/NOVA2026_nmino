@@ -1,6 +1,6 @@
 # Continuation
 
-Selected release remains `GU-R01-20261107-r4` until the fuller snapshot is indexed.
+Frozen package: `GU-R01-20261107-r4`. Runnable later snapshot: `releases/GU-R08-20261107-r1`.
 
 Shipped in live source after that release:
 
